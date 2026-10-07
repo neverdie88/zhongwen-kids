@@ -13,18 +13,40 @@
   line-height: 1.35;
 }
 
-.option.wrong:disabled { opacity: 1; }
+.option.correct:disabled, .option.wrong:disabled { opacity: 1; }
 
-.translation-answer {
+.option.correct, .option.wrong { position: relative; padding-right: 48px; }
+.choice-mark {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: system-ui, sans-serif;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.choice-feedback {
   display: grid;
   justify-items: center;
   gap: 7px;
   width: min(650px, 100%);
-  margin-top: 9px;
+  margin-top: 18px;
+  padding: 18px 16px;
+  border: 2px solid;
+  border-radius: 18px;
+  text-align: center;
 }
-
-.translation-answer .speaking-phrase { margin-top: 6px; }
-.translation-answer strong { font-size: 17px; line-height: 1.4; }
+.choice-feedback.is-correct { background: #e9f9f1; border-color: #4dbd91; }
+.choice-feedback.is-wrong { background: #fff0ed; border-color: #ec8d83; }
+.choice-result { font-size: 20px; }
+.is-correct .choice-result { color: #247b5c; }
+.is-wrong .choice-result { color: #a94f46; }
+.choice-caption { color: var(--muted); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+.choice-feedback .speaking-phrase { margin-top: 0; }
+.choice-pinyin { font-size: 21px; }
+.choice-hanzi { font-size: 39px; font-weight: 400; line-height: 1.2; }
+.choice-meaning { font-size: 18px; font-weight: 800; line-height: 1.4; }
 
 .speaker-symbol {
   display: grid;
@@ -57,7 +79,7 @@
 @media (max-width: 600px) {
   .listening-options { grid-template-columns: 1fr; }
   .listening-options .option { min-height: 57px; }
-  .translation-answer .speaking-word { min-height: 71px; }
+  .choice-feedback .speaking-word { min-height: 71px; }
   .exercise-card .builder-answer, .exercise-card .builder-bank { gap: 5px; }
   .exercise-card .chunk { padding: 9px 11px; font-size: 19px; }
 }

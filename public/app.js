@@ -41,9 +41,9 @@ function readVoiceStyle() {
 const newPractice = () => ({ status: 'idle', transcript: '', message: '', progress: '' });
 const state = {
   view: 'home', lesson: 1, step: 'learn', phraseIndex: 0, quizIndex: 0,
-  quizSelected: null, quizWrongOptions: new Set(), exercises: null, right: 0, total: 0,
+  quizSelected: null, quizLastChoice: null, quizWrongOptions: new Set(), exercises: null, right: 0, total: 0,
   builderIndex: 0, builderSelected: [], builderChecked: false, builderHint: '', builderAttempted: false,
-  listeningIndex: 0, listeningSelected: null, listeningWrongOptions: new Set(),
+  listeningIndex: 0, listeningSelected: null, listeningLastChoice: null, listeningWrongOptions: new Set(),
   practice: newPractice(), traceDrawn: false,
   wordDetail: null,
   homeworkLesson: 1, homeworkMode: 'chinese', homework: null,
@@ -320,9 +320,9 @@ function startLesson(number) {
   if (state.wordDetail) closeWordDialog();
   state.lesson = number;
   state.view = 'lesson'; state.step = 'learn'; state.phraseIndex = 0;
-  state.quizIndex = 0; state.quizSelected = null; state.quizWrongOptions = new Set(); state.right = 0; state.total = 0;
+  state.quizIndex = 0; state.quizSelected = null; state.quizLastChoice = null; state.quizWrongOptions = new Set(); state.right = 0; state.total = 0;
   state.builderIndex = 0; state.builderSelected = []; state.builderChecked = false; state.builderHint = ''; state.builderAttempted = false;
-  state.listeningIndex = 0; state.listeningSelected = null; state.listeningWrongOptions = new Set();
+  state.listeningIndex = 0; state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
   state.practice = newPractice(); state.traceDrawn = false;
   state.exercises = buildLessonExercises(lesson(), buildEnglish[number]);
   render(); window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -399,15 +399,18 @@ function lessonCard() {
     const question = state.exercises.translations[state.quizIndex];
     const item = current.phrases[question.phraseIndex];
     const chinesePrompt = question.direction === 'chinese-to-english';
+    const chosen = state.quizLastChoice === null ? null : current.phrases[state.quizLastChoice];
+    const answered = state.quizSelected !== null;
     return `<span class="exercise-tag">Translation choice · ${state.quizIndex + 1}/${state.exercises.translations.length}</span><h2>${chinesePrompt ? 'Choose the English meaning' : 'Choose the Chinese sentence'}</h2>
       ${chinesePrompt ? `${renderSpeakingPhrase(item, 'exercise-prompt')}<button class="btn btn-light btn-small" data-action="speak-quiz">🔊 Hear it</button>` : `<p class="translation-prompt">${escapeHtml(item.english)}</p>`}
       <div class="options">${question.options.map(optionIndex => {
-        const correct = state.quizSelected === question.phraseIndex;
+        const correct = answered && optionIndex === question.phraseIndex;
         const wrong = state.quizWrongOptions.has(optionIndex);
-        const className = correct && optionIndex === question.phraseIndex ? 'correct' : wrong ? 'wrong' : '';
-        return `<button class="option ${chinesePrompt ? '' : 'hanzi option-hanzi'} ${className}" data-action="choose" data-option="${optionIndex}" ${correct || wrong ? 'disabled' : ''}>${escapeHtml(chinesePrompt ? current.phrases[optionIndex].english : current.phrases[optionIndex].chinese)}</button>`;
+        const className = correct ? 'correct' : wrong ? 'wrong' : '';
+        return `<button class="option ${chinesePrompt ? '' : 'hanzi option-hanzi'} ${className}" data-action="choose" data-option="${optionIndex}" ${answered || wrong ? 'disabled' : ''}>${escapeHtml(chinesePrompt ? current.phrases[optionIndex].english : current.phrases[optionIndex].chinese)}${correct || wrong ? `<span class="choice-mark" aria-label="${correct ? 'Correct' : 'Wrong'}">${correct ? '✓' : '✕'}</span>` : ''}</button>`;
       }).join('')}</div>
-      ${state.quizSelected !== null ? `<div class="feedback good" role="status">Nice choice! ✨</div><div class="translation-answer">${renderSpeakingPhrase(item, 'answer-phrase')}<strong>${escapeHtml(item.english)}</strong></div><div class="card-actions"><button class="btn btn-primary" data-action="next-quiz">Continue →</button></div>` : state.quizWrongOptions.size ? '<div class="feedback try" role="status">Not quite. Try another answer to keep going.</div>' : ''}`;
+      ${chosen ? `<div class="choice-feedback ${answered ? 'is-correct' : 'is-wrong'}" role="status"><strong class="choice-result">${answered ? '✓ Correct' : '✕ Try another choice'}</strong><span class="choice-caption">Your choice</span>${renderSpeakingPhrase(chosen, 'answer-phrase')}<span class="choice-meaning">Meaning: ${escapeHtml(chosen.english)}</span></div>` : ''}
+      ${answered ? '<div class="card-actions"><button class="btn btn-primary" data-action="next-quiz">Continue →</button></div>' : ''}`;
   }
   if (state.step === 'build') {
     const question = state.exercises.builders[state.builderIndex];
@@ -426,10 +429,16 @@ function lessonCard() {
     const question = state.exercises.listening[state.listeningIndex];
     const answered = state.listeningSelected !== null;
     const correct = state.listeningSelected === question.answer.text;
+    const chosen = question.options.find(option => option.text === state.listeningLastChoice);
     return `<span class="exercise-tag">Listening choice · ${state.listeningIndex + 1}/${state.exercises.listening.length}</span><h2>Which Chinese word do you hear?</h2>
       <div class="speaker-symbol" aria-hidden="true">🔊</div><div class="card-actions"><button class="btn btn-primary" data-action="play-listening">🔊 Play the word</button><button class="btn btn-light" data-action="slow-listening">🐢 Play slowly</button></div>
-      <div class="options listening-options">${question.options.map(option => `<button class="option hanzi option-hanzi ${correct && option.text === question.answer.text ? 'correct' : state.listeningWrongOptions.has(option.text) ? 'wrong' : ''}" data-action="choose-listening" data-word="${escapeHtml(option.text)}" ${answered || state.listeningWrongOptions.has(option.text) ? 'disabled' : ''}>${escapeHtml(option.text)}</button>`).join('')}</div>
-      ${answered ? `<div class="feedback ${correct ? 'good' : 'try'}" role="status">${correct ? 'You heard it! ✨' : 'You can practise this word again later.'}</div><div class="listening-answer"><span class="pinyin">${escapeHtml(question.answer.pinyin)}</span><strong class="hanzi">${escapeHtml(question.answer.text)}</strong><span>${escapeHtml(question.answer.meaning)}</span></div><div class="card-actions"><button class="btn btn-mint" data-action="next-listening">Continue →</button></div>` : `${state.listeningWrongOptions.size ? '<div class="feedback try" role="status">Not quite. Listen again and choose another word.</div>' : ''}<div class="card-actions"><button class="btn btn-light btn-small" data-action="skip-listening">Skip this word</button></div>`}
+      <div class="options listening-options">${question.options.map(option => {
+        const rightChoice = correct && option.text === question.answer.text;
+        const wrongChoice = state.listeningWrongOptions.has(option.text);
+        return `<button class="option hanzi option-hanzi ${rightChoice ? 'correct' : wrongChoice ? 'wrong' : ''}" data-action="choose-listening" data-word="${escapeHtml(option.text)}" ${answered || wrongChoice ? 'disabled' : ''}>${escapeHtml(option.text)}${rightChoice || wrongChoice ? `<span class="choice-mark" aria-label="${rightChoice ? 'Correct' : 'Wrong'}">${rightChoice ? '✓' : '✕'}</span>` : ''}</button>`;
+      }).join('')}</div>
+      ${chosen ? `<div class="choice-feedback ${correct ? 'is-correct' : 'is-wrong'}" role="status"><strong class="choice-result">${correct ? '✓ Correct' : '✕ Try another choice'}</strong><span class="choice-caption">Your choice</span><span class="choice-pinyin">${escapeHtml(chosen.pinyin)}</span><strong class="choice-hanzi hanzi">${escapeHtml(chosen.text)}</strong><span class="choice-meaning">Meaning: ${escapeHtml(chosen.meaning)}</span></div>` : answered ? `<div class="feedback try" role="status">You can practise this word again later.</div><div class="listening-answer"><span class="pinyin">${escapeHtml(question.answer.pinyin)}</span><strong class="hanzi">${escapeHtml(question.answer.text)}</strong><span>${escapeHtml(question.answer.meaning)}</span></div>` : ''}
+      ${answered ? '<div class="card-actions"><button class="btn btn-mint" data-action="next-listening">Continue →</button></div>' : '<div class="card-actions"><button class="btn btn-light btn-small" data-action="skip-listening">Skip this word</button></div>'}
       <p class="hint">Audio uses the Chinese voice selected in Settings.</p>`;
   }
   if (state.step === 'speak') {
@@ -780,18 +789,18 @@ document.addEventListener('click', event => {
     const option = Number(target.dataset.option);
     const question = state.exercises.translations[state.quizIndex];
     if (!question.options.includes(option) || state.quizWrongOptions.has(option)) return;
+    state.quizLastChoice = option;
     const firstTry = state.quizWrongOptions.size === 0;
     if (firstTry) state.total++;
     if (option === question.phraseIndex) {
       state.quizSelected = option;
       if (firstTry) state.right++;
-      chime();
     } else state.quizWrongOptions.add(option);
-    return render();
+    render(); speak(lesson().phrases[option].chinese); return;
   }
   if (action === 'next-quiz') {
     if (state.quizSelected === null) return;
-    state.quizSelected = null; state.quizWrongOptions = new Set();
+    state.quizSelected = null; state.quizLastChoice = null; state.quizWrongOptions = new Set();
     if (++state.quizIndex >= state.exercises.translations.length) state.step = 'build';
     return render();
   }
@@ -828,24 +837,23 @@ document.addEventListener('click', event => {
     const question = state.exercises.listening[state.listeningIndex];
     const word = target.dataset.word;
     if (!question.options.some(option => option.text === word) || state.listeningWrongOptions.has(word)) return;
+    state.listeningLastChoice = word;
     const firstTry = state.listeningWrongOptions.size === 0;
     if (firstTry) state.total++;
     if (word === question.answer.text) {
       state.listeningSelected = word;
       if (firstTry) state.right++;
-      chime();
-      return render();
-    }
-    state.listeningWrongOptions.add(word);
-    render(); speak(question.answer.text); return;
+    } else state.listeningWrongOptions.add(word);
+    render(); speak(word); return;
   }
   if (action === 'skip-listening' && state.step === 'listening' && state.listeningSelected === null) {
     state.listeningSelected = 'skipped';
+    state.listeningLastChoice = null;
     if (!state.listeningWrongOptions.size) state.total++;
     return render();
   }
   if (action === 'next-listening' && state.step === 'listening' && state.listeningSelected !== null) {
-    state.listeningSelected = null; state.listeningWrongOptions = new Set();
+    state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
     if (++state.listeningIndex >= state.exercises.listening.length) {
       state.step = 'speak'; state.practice = newPractice(); return render();
     }
