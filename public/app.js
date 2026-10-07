@@ -85,7 +85,7 @@ function renderWordDialog() {
     <div class="eyebrow">Word explorer</div><h2 id="word-dialog-title">Listen, learn, write</h2>
     <div class="word-hero"><div class="word-hero-hanzi hanzi">${escapeHtml(item.text)}</div><div class="word-hero-pinyin">${escapeHtml(item.pinyin)}</div></div>
     <div class="word-meaning"><span>English meaning</span><strong>${escapeHtml(item.meaning)}</strong></div>
-    <div class="card-actions word-actions"><button type="button" class="btn btn-primary" data-action="word-listen">🔊 Hear pronunciation</button></div>
+    <div class="card-actions word-actions"><button type="button" class="btn btn-primary" data-action="word-listen">🔊 Hear again</button></div>
     <div class="word-writing"><div class="word-writing-head"><div><h3>How to write</h3><p>Watch each stroke in order, then copy the character on paper.</p></div><button type="button" class="btn btn-light btn-small" data-action="word-replay">↻ Replay</button></div>
       <div class="word-stroke-grid">${Array.from(item.text).filter(char => /\p{Script=Han}/u.test(char)).map((char, index) => `<div class="word-stroke-card"><div class="word-stroke-canvas" data-stroke-char="${escapeHtml(char)}" data-stroke-index="${index}" aria-label="Animated stroke order for ${escapeHtml(char)}"></div><strong class="hanzi">${escapeHtml(char)}</strong></div>`).join('')}</div>
     </div></dialog>`;
@@ -703,6 +703,7 @@ document.addEventListener('click', event => {
     state.wordDetail = { text: target.dataset.word, pinyin: target.dataset.pinyin, meaning: target.dataset.meaning };
     app.insertAdjacentHTML('beforeend', renderWordDialog());
     setupWordDialog();
+    speak(state.wordDetail.text);
     return;
   }
   if (action === 'word-close') return closeWordDialog();
