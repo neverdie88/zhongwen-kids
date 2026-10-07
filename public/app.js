@@ -5,10 +5,10 @@ import { tokenizePhrase } from './word-study.mjs';
 import { chooseChineseVoice, voicePitch } from './voice-style.mjs';
 import { renderTranscript } from './transcript-pinyin.mjs';
 import { buildLessonExercises } from './exercise-data.mjs';
+import { readProgress, saveProgress as persistProgress } from './progress-store.mjs';
 
 const app = document.getElementById('app');
 const toastEl = document.getElementById('toast');
-const STORAGE_KEY = 'little-lantern-progress-v2';
 const SPEECH_SETTING_KEY = 'little-lantern-speech-recognizer-v1';
 const VOICE_SETTING_KEY = 'little-lantern-chinese-voice-v1';
 let book;
@@ -18,15 +18,6 @@ let activeCapture = null;
 let wordWriters = [];
 let wordTrigger = null;
 
-function readProgress() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    return {
-      lessons: saved.lessons && typeof saved.lessons === 'object' ? saved.lessons : {},
-      speechHomework: saved.speechHomework && typeof saved.speechHomework === 'object' ? saved.speechHomework : {},
-    };
-  } catch { return { lessons: {}, speechHomework: {} }; }
-}
 let progress = readProgress();
 function readSpeechRecognizer() {
   try {
@@ -143,8 +134,7 @@ function clearToast() {
 }
 
 function saveProgress() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); }
-  catch { toast('Progress could not be saved on this device.'); }
+  if (!persistProgress(progress)) toast('Progress could not be saved on this device.');
 }
 
 function chime() {
@@ -325,33 +315,70 @@ function startLesson(number) {
   state.listeningIndex = 0; state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
   state.practice = newPractice(); state.traceDrawn = false;
   state.exercises = buildLessonExercises(lesson(), buildEnglish[number]);
+  const checkpoint = progress.lessons[number]?.checkpoint;
+  if (checkpoint && !progress.lessons[number].completed) {
+    const limits = { learn: lesson().phrases.length, quiz: state.exercises.translations.length,
+      build: state.exercises.builders.length, listening: state.exercises.listening.length };
+    state.step = checkpoint.step;
+    const index = Math.min(checkpoint.index, Math.max(0, (limits[state.step] || 1) - 1));
+    if (state.step === 'learn') state.phraseIndex = index;
+    if (state.step === 'quiz') state.quizIndex = index;
+    if (state.step === 'build') state.builderIndex = index;
+    if (state.step === 'listening') state.listeningIndex = index;
+    state.right = checkpoint.right;
+    state.total = checkpoint.total;
+  }
+  saveLessonCheckpoint();
   render(); window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function lessonPercent() {
-  const count = lesson().phrases.length;
-  return {
-    learn: 8 + 27 * ((state.phraseIndex + 1) / count),
-    quiz: 38 + 22 * ((state.quizIndex + 1) / state.exercises.translations.length),
-    build: 63 + 14 * ((state.builderIndex + 1) / state.exercises.builders.length),
-    listening: 79 + 10 * ((state.listeningIndex + 1) / state.exercises.listening.length),
-    speak: 92, trace: 97, finish: 100,
-  }[state.step];
+  const learnCount = lesson().phrases.length;
+  const quizCount = state.exercises.translations.length;
+  const buildCount = state.exercises.builders.length;
+  const listeningCount = state.exercises.listening.length;
+  const total = learnCount + quizCount + buildCount + listeningCount + 2;
+  const completed = {
+    learn: state.phraseIndex,
+    quiz: learnCount + state.quizIndex,
+    build: learnCount + quizCount + state.builderIndex,
+    listening: learnCount + quizCount + buildCount + state.listeningIndex,
+    speak: total - 2,
+    trace: total - 1,
+    finish: total,
+  }[state.step] || 0;
+  return Math.round(100 * completed / total);
+}
+
+function saveLessonCheckpoint() {
+  const previous = progress.lessons[state.lesson] || {};
+  if (previous.completed) return;
+  const indices = { learn: state.phraseIndex, quiz: state.quizIndex, build: state.builderIndex, listening: state.listeningIndex };
+  progress.lessons[state.lesson] = {
+    ...previous,
+    completed: false,
+    percent: Math.round(lessonPercent()),
+    checkpoint: { step: state.step, index: indices[state.step] || 0, right: state.right, total: state.total },
+  };
+  saveProgress();
 }
 
 function renderHome() {
   const completed = doneCount();
   const next = book.lessons.find(item => !progress.lessons[item.number]?.completed)?.number || 1;
+  const nextStarted = !!progress.lessons[next]?.checkpoint;
   return `<section class="hero panel">
     <div class="hero-copy"><div class="eyebrow">Your Chinese adventure</div><h1>Small steps.<br>Big discoveries.</h1>
       <p>Listen, speak, translate, build sentences, and draw characters from <span class="hanzi">《中文》第二册</span>. One cheerful lesson at a time.</p>
-      <div class="hero-actions"><button class="btn btn-primary" data-action="start" data-lesson="${next}">${completed ? 'Keep learning' : 'Start Lesson 1'} <span aria-hidden="true">→</span></button></div>
+      <div class="hero-actions"><button class="btn btn-primary" data-action="start" data-lesson="${next}">${nextStarted ? `Continue Lesson ${next}` : completed ? 'Keep learning' : 'Start Lesson 1'} <span aria-hidden="true">→</span></button></div>
     </div><div class="mascot-scene" aria-hidden="true"><span class="spark one">✦</span><div class="mascot"><div class="mascot-mouth"></div><div class="mascot-top"></div><div class="mascot-tassel"></div></div><span class="spark two">✧</span></div>
   </section>
   <div class="overview"><div><div class="eyebrow">The learning path</div><h2>12 lessons · 4 little worlds</h2></div><div class="progress-badge">★ ${completed} of 12 complete</div></div>
   <div class="unit-grid">${book.units.map(unit => `<section class="unit-card panel"><div class="unit-head"><span class="unit-number">${unit.number}</span><div><h3>${escapeHtml(unit.title)}</h3><small>Lessons ${unit.number * 3 - 2}–${unit.number * 3}</small></div></div><div class="lesson-list">${book.lessons.filter(item => item.unit === unit.number).map(item => {
     const done = progress.lessons[item.number]?.completed;
-    return `<button class="lesson-tile ${done ? 'done' : ''}" data-action="start" data-lesson="${item.number}"><span class="lesson-icon hanzi">${escapeHtml(item.character)}</span><span class="lesson-info"><strong class="hanzi">${escapeHtml(item.title)}</strong><small>${escapeHtml(item.englishTitle)}</small></span><span class="tile-end" aria-hidden="true">${done ? '★' : '›'}</span></button>`;
+    const percent = done ? 100 : progress.lessons[item.number]?.percent || 0;
+    const status = done ? 'Complete' : percent ? `${percent}% complete` : progress.lessons[item.number]?.checkpoint ? 'In progress' : 'Not started';
+    return `<button class="lesson-tile ${done ? 'done' : ''}" data-action="start" data-lesson="${item.number}"><span class="lesson-icon hanzi">${escapeHtml(item.character)}</span><span class="lesson-info"><strong class="hanzi">${escapeHtml(item.title)}</strong><small>${escapeHtml(item.englishTitle)}</small><span class="lesson-tile-meter" role="progressbar" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100" aria-label="Lesson ${item.number}: ${status}"><span style="width:${percent}%"></span></span><span class="lesson-tile-status">${status}</span></span><span class="tile-end" aria-hidden="true">${done ? '★' : '›'}</span></button>`;
   }).join('')}</div></section>`).join('')}</div>`;
 }
 
@@ -633,7 +660,7 @@ function finishLesson() {
   const current = lesson();
   const stars = Math.max(1, Math.min(3, Math.ceil((state.right / Math.max(1, state.total)) * 3)));
   const previous = progress.lessons[current.number] || {};
-  progress.lessons[current.number] = { completed: true, stars: Math.max(previous.stars || 0, stars), lastPlayed: new Date().toISOString(), plays: (previous.plays || 0) + 1 };
+  progress.lessons[current.number] = { completed: true, percent: 100, stars: Math.max(previous.stars || 0, stars), lastPlayed: new Date().toISOString(), plays: (previous.plays || 0) + 1 };
   saveProgress(); state.step = 'finish'; chime(); render();
 }
 
@@ -781,6 +808,7 @@ document.addEventListener('click', event => {
     if (!['accepted', 'skipped'].includes(state.practice.status)) return;
     state.practice = newPractice();
     if (++state.phraseIndex >= lesson().phrases.length) { state.step = 'quiz'; state.phraseIndex = 0; }
+    saveLessonCheckpoint();
     return render();
   }
   if (action === 'speak-phrase') return speak(lesson().phrases[state.step === 'learn' ? state.phraseIndex : 0].chinese);
@@ -802,6 +830,7 @@ document.addEventListener('click', event => {
     if (state.quizSelected === null) return;
     state.quizSelected = null; state.quizLastChoice = null; state.quizWrongOptions = new Set();
     if (++state.quizIndex >= state.exercises.translations.length) state.step = 'build';
+    saveLessonCheckpoint();
     return render();
   }
   if (action === 'speak-build') return speak(state.exercises.builders[state.builderIndex].prompt);
@@ -827,8 +856,10 @@ document.addEventListener('click', event => {
     state.builderSelected = []; state.builderChecked = false; state.builderHint = ''; state.builderAttempted = false;
     if (state.builderIndex >= state.exercises.builders.length) {
       state.step = 'listening';
+      saveLessonCheckpoint();
       render(); speak(state.exercises.listening[0].answer.text); return;
     }
+    saveLessonCheckpoint();
     return render();
   }
   if (action === 'play-listening') return speak(state.exercises.listening[state.listeningIndex].answer.text);
@@ -855,13 +886,14 @@ document.addEventListener('click', event => {
   if (action === 'next-listening' && state.step === 'listening' && state.listeningSelected !== null) {
     state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
     if (++state.listeningIndex >= state.exercises.listening.length) {
-      state.step = 'speak'; state.practice = newPractice(); return render();
+      state.step = 'speak'; state.practice = newPractice(); saveLessonCheckpoint(); return render();
     }
+    saveLessonCheckpoint();
     render(); speak(state.exercises.listening[state.listeningIndex].answer.text); return;
   }
   if (action === 'next-trace') {
     if (!['accepted', 'skipped'].includes(state.practice.status)) return;
-    state.step = 'trace'; return render();
+    state.step = 'trace'; saveLessonCheckpoint(); return render();
   }
   if (action === 'clear-trace') { document.getElementById('trace-canvas')?.getContext('2d')?.clearRect(0, 0, 520, 520); state.traceDrawn = false; document.querySelector('[data-action="finish-lesson"]').disabled = true; return; }
   if (action === 'finish-lesson') return finishLesson();

@@ -11,7 +11,7 @@ cd /Users/ductnguy/Documents/Playground/zhongwen-kids
 npm start
 ```
 
-Open [http://127.0.0.1:4178](http://127.0.0.1:4178). Keep that terminal open while using the app. It listens only on this computer. Audio playback uses the browser's Chinese voices. The **⚙ Settings** button chooses one recognizer for both Learn and Review, plus a Chinese playback voice. Both choices and learning progress stay in browser local storage.
+Open [http://127.0.0.1:4178](http://127.0.0.1:4178). Keep that terminal open while using the app. It listens only on this computer. Audio playback uses the browser's Chinese voices. The **⚙ Settings** button chooses one recognizer for both Learn and Review, plus a Chinese playback voice. Voice and recognizer settings stay in browser local storage. Lesson and Review progress is saved in first-party cookies for one year; existing local-storage progress is migrated automatically. Each lesson card shows a progress bar, and an unfinished lesson resumes from its last completed activity. Clearing site cookies clears saved progress.
 
 For Chinese playback, choose **Standard voice** or **Girl voice** and tap **Preview voice** to hear the selection. Girl voice prefers Tingting or another available Mandarin girl voice, with a brighter pitch fallback when the browser has only one Chinese voice. This setting applies to phrase playback, word pronunciation, Learn, and Review. The exact sound depends on the browser's installed voices.
 
