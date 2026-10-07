@@ -1,0 +1,148 @@
+.audio-build-answer {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  width: min(700px, 100%);
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #e9f9f1;
+  color: #246b53;
+}
+.audio-build-answer .speaking-phrase { margin: 0; }
+.audio-build-answer > strong { font-size: 18px; line-height: 1.4; }
+
+.picture-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  width: min(750px, 100%);
+  margin-top: 22px;
+}
+.picture-choice {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 11px;
+  min-height: 155px;
+  padding: 16px 10px;
+  text-align: center;
+}
+.picture-choice:disabled { opacity: 1; }
+.picture-scene {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 94px;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fff3cf, #ffdfb9);
+  font-size: clamp(30px, 4vw, 48px);
+  letter-spacing: -.14em;
+  white-space: nowrap;
+}
+.scene-2 { background: linear-gradient(145deg, #e5f6e9, #b5e6d5); }
+.scene-3 { background: linear-gradient(145deg, #e8ecff, #c8d9ff); }
+.picture-number { color: var(--muted); font-size: 14px; }
+.picture-choice.correct .picture-number { color: #247b5c; }
+.picture-choice.wrong .picture-number { color: #a94f46; }
+
+.cloze-english {
+  max-width: 600px;
+  margin: 17px 0 6px;
+  color: var(--muted);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.cloze-sentence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+  margin: 16px 0 5px;
+  font-size: clamp(32px, 6vw, 50px);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.cloze-gap {
+  display: grid;
+  place-items: center;
+  min-width: 1.8em;
+  padding: 0 6px;
+  border: 2px dashed #e0a070;
+  border-radius: 12px;
+  background: #fff3e8;
+  color: #b66c48;
+}
+.cloze-options, .dialogue-options { width: min(670px, 100%); }
+
+.dialogue-bubble {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  width: min(670px, 100%);
+  margin: 20px 0 6px;
+  padding: 18px;
+  border-radius: 22px 22px 22px 5px;
+  background: #edf5fb;
+  text-align: left;
+}
+.dialogue-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #d9edfd;
+  font-size: 30px;
+}
+.dialogue-bubble > div { display: grid; gap: 3px; min-width: 0; }
+.dialogue-bubble .speaking-phrase { justify-content: flex-start; margin: 0; }
+.dialogue-bubble .speaking-word { background: #fff; }
+.dialogue-bubble .speaking-hanzi { font-size: clamp(25px, 4vw, 36px); }
+.dialogue-english { color: var(--muted); font-size: 16px; line-height: 1.4; }
+.dialogue-speak-hint { margin: 22px 0 0; font-weight: 800; }
+
+.tone-question { max-width: 650px; font-size: 20px; line-height: 1.6; }
+.tone-question .hanzi { font-size: 29px; font-weight: 400; }
+.tone-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  width: min(750px, 100%);
+  margin-top: 24px;
+}
+.tone-option {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 15px 8px;
+  text-align: center;
+}
+.tone-option:disabled { opacity: 1; }
+.tone-pinyin { font-size: clamp(23px, 3vw, 33px); line-height: 1.2; }
+.tone-option svg { width: 66px; height: 48px; max-width: 100%; fill: none; stroke: #d67558; stroke-width: 5; stroke-linecap: round; }
+.tone-name { color: var(--muted); font-size: 12px; line-height: 1.3; }
+
+@media (max-width: 600px) {
+  .picture-options { gap: 7px; }
+  .picture-choice { min-height: 124px; padding: 9px 5px; }
+  .picture-scene { min-height: 75px; font-size: clamp(23px, 7vw, 36px); }
+  .picture-number { font-size: 11px; }
+  .tone-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dialogue-bubble { padding: 13px; gap: 10px; }
+  .dialogue-avatar { width: 40px; height: 40px; font-size: 24px; }
+}
+
+@media (max-width: 360px) {
+  .picture-options { grid-template-columns: 1fr; }
+  .picture-choice { display: flex; justify-content: flex-start; gap: 16px; min-height: 84px; padding: 7px; }
+  .picture-scene { width: 122px; min-height: 68px; font-size: 30px; }
+  .picture-number { font-size: 14px; }
+}

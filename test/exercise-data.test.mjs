@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { buildLessonExercises } from '../public/exercise-data.mjs';
+import { tokenizePhrase } from '../public/word-study.mjs';
+import { transcriptPinyin } from '../public/transcript-pinyin.mjs';
 
 const book = JSON.parse(readFileSync(new URL('../data/book2.json', import.meta.url), 'utf8'));
 const buildEnglish = {
@@ -41,5 +43,43 @@ test('each Book 2 lesson has distinct translation, sentence, and listening choic
         assert.ok(word.pinyin && word.meaning, `lesson ${lesson.number}: ${word.text}`);
       }
     }
+  }
+});
+
+test('all five new activities use valid content in every lesson', () => {
+  for (const lesson of book.lessons) {
+    const { audioBuild, picture, cloze, dialogue, tone } = buildLessonExercises(lesson, buildEnglish[lesson.number]);
+    assert.equal(audioBuild.answer.join(''), lesson.build.join(''));
+    assert.deepEqual([...audioBuild.bankOrder].sort((a, b) => a - b), audioBuild.answer.map((_, index) => index));
+
+    assert.equal(picture.options.length, 3);
+    assert.equal(new Set(picture.options.map(option => option.phraseIndex)).size, 3);
+    assert.ok(picture.options.some(option => option.phraseIndex === picture.answer));
+    for (const option of picture.options) {
+      assert.ok(lesson.phrases[option.phraseIndex]);
+      assert.ok(option.icons && option.description);
+    }
+
+    assert.equal(cloze.prefix + cloze.answer + cloze.suffix, lesson.phrases[cloze.phraseIndex].chinese);
+    assert.equal(new Set(cloze.options.map(option => option.text)).size, 3);
+    assert.ok(cloze.options.some(option => option.text === cloze.answer));
+    assert.ok(cloze.options.every(option => option.meaning));
+
+    assert.ok(dialogue.prompt && dialogue.english);
+    assert.ok(tokenizePhrase(dialogue.prompt, transcriptPinyin(dialogue.prompt))
+      .filter(token => token.isChinese).every(token => token.pinyin && token.meaning),
+    `lesson ${lesson.number} dialogue word details`);
+    for (const character of dialogue.prompt.match(/\p{Script=Han}/gu) || []) {
+      assert.ok(existsSync(new URL(`../public/strokes/${character}.json`, import.meta.url)),
+        `lesson ${lesson.number} dialogue stroke for ${character}`);
+    }
+    assert.equal(new Set(dialogue.options).size, 3);
+    assert.ok(dialogue.options.includes(dialogue.answer));
+    assert.ok(dialogue.options.every(index => lesson.phrases[index]));
+
+    assert.equal(tone.hanzi, lesson.character);
+    assert.ok(tone.audio.includes(tone.hanzi));
+    assert.equal(new Set(tone.options).size, 4);
+    assert.ok(tone.options[tone.answer]);
   }
 });

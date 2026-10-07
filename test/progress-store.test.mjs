@@ -62,6 +62,17 @@ test('unfinished lesson checkpoint and percentage survive a new visit', () => {
   for (const flags of browser.attributes.values()) assert.ok(!flags.includes('Secure'));
 });
 
+test('each new activity keeps its checkpoint in the lesson cookie', () => {
+  const browser = fakeBrowser();
+  for (const step of ['audio-build', 'picture', 'cloze', 'dialogue', 'tone']) {
+    const progress = readProgress(browser);
+    progress.lessons[1] = { completed: false, percent: 68,
+      checkpoint: { step, index: 0, right: 8, total: 10 } };
+    assert.equal(saveProgress(progress, browser), true);
+    assert.equal(readProgress(browser).lessons[1].checkpoint.step, step);
+  }
+});
+
 test('cookie records stay within browser size limits for all lessons and review sets', () => {
   const browser = fakeBrowser();
   const progress = readProgress(browser);

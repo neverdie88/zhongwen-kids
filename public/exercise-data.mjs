@@ -1,4 +1,5 @@
 import { tokenizePhrase, wordMeanings } from './word-study.mjs';
+import { buildExtraExercises } from './extra-exercise-data.mjs';
 
 function shuffled(items, seed) {
   const result = [...items];
@@ -38,5 +39,5 @@ export function buildLessonExercises(lesson, buildEnglish) {
     options: shuffled([words[index], words[(index + 1) % words.length], words[(index + 2) % words.length]], lesson.number * 307 + index * 53),
   }));
 
-  return { translations, builders, listening };
+  return { translations, builders, listening, ...buildExtraExercises(lesson, buildEnglish) };
 }

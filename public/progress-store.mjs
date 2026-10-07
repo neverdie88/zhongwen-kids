@@ -1,7 +1,7 @@
 const LESSONS_COOKIE = 'little_lantern_lessons_v1';
 const REVIEW_COOKIE = 'little_lantern_review_v1';
 const COOKIE_AGE = 60 * 60 * 24 * 365;
-const STEPS = new Set(['learn', 'quiz', 'build', 'listening', 'speak', 'trace']);
+const STEPS = new Set(['learn', 'quiz', 'build', 'listening', 'audio-build', 'picture', 'cloze', 'dialogue', 'tone', 'speak', 'trace']);
 
 const numberIn = (value, max) => Number.isInteger(value) ? Math.max(0, Math.min(max, value)) : 0;
 const objectOrEmpty = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};

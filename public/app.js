@@ -3,7 +3,7 @@ import { prepareBrowserRecognizer, releaseBrowserRecognizer, transcribeInBrowser
 import { recordedAudioToSamples } from './audio-prep.mjs';
 import { tokenizePhrase } from './word-study.mjs';
 import { chooseChineseVoice, voicePitch } from './voice-style.mjs';
-import { renderTranscript } from './transcript-pinyin.mjs';
+import { renderTranscript, transcriptPinyin } from './transcript-pinyin.mjs';
 import { buildLessonExercises } from './exercise-data.mjs';
 import { readProgress, saveProgress as persistProgress } from './progress-store.mjs';
 
@@ -35,6 +35,11 @@ const state = {
   quizSelected: null, quizLastChoice: null, quizWrongOptions: new Set(), exercises: null, right: 0, total: 0,
   builderIndex: 0, builderSelected: [], builderChecked: false, builderHint: '', builderAttempted: false,
   listeningIndex: 0, listeningSelected: null, listeningLastChoice: null, listeningWrongOptions: new Set(),
+  audioSelected: [], audioChecked: false, audioHint: '', audioAttempted: false,
+  pictureSelected: null, pictureLastChoice: null, pictureWrongOptions: new Set(),
+  clozeSelected: null, clozeLastChoice: null, clozeWrongOptions: new Set(),
+  dialogueSelected: null, dialogueLastChoice: null, dialogueWrongOptions: new Set(),
+  toneSelected: null, toneLastChoice: null, toneWrongOptions: new Set(),
   practice: newPractice(), traceDrawn: false,
   wordDetail: null,
   homeworkLesson: 1, homeworkMode: 'chinese', homework: null,
@@ -313,6 +318,11 @@ function startLesson(number) {
   state.quizIndex = 0; state.quizSelected = null; state.quizLastChoice = null; state.quizWrongOptions = new Set(); state.right = 0; state.total = 0;
   state.builderIndex = 0; state.builderSelected = []; state.builderChecked = false; state.builderHint = ''; state.builderAttempted = false;
   state.listeningIndex = 0; state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
+  state.audioSelected = []; state.audioChecked = false; state.audioHint = ''; state.audioAttempted = false;
+  state.pictureSelected = null; state.pictureLastChoice = null; state.pictureWrongOptions = new Set();
+  state.clozeSelected = null; state.clozeLastChoice = null; state.clozeWrongOptions = new Set();
+  state.dialogueSelected = null; state.dialogueLastChoice = null; state.dialogueWrongOptions = new Set();
+  state.toneSelected = null; state.toneLastChoice = null; state.toneWrongOptions = new Set();
   state.practice = newPractice(); state.traceDrawn = false;
   state.exercises = buildLessonExercises(lesson(), buildEnglish[number]);
   const checkpoint = progress.lessons[number]?.checkpoint;
@@ -329,7 +339,11 @@ function startLesson(number) {
     state.total = checkpoint.total;
   }
   saveLessonCheckpoint();
-  render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+  render();
+  if (state.step === 'audio-build') speak(state.exercises.audioBuild.answer.join(''));
+  if (state.step === 'dialogue') speak(state.exercises.dialogue.prompt);
+  if (state.step === 'tone') speak(state.exercises.tone.audio);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function lessonPercent() {
@@ -337,12 +351,18 @@ function lessonPercent() {
   const quizCount = state.exercises.translations.length;
   const buildCount = state.exercises.builders.length;
   const listeningCount = state.exercises.listening.length;
-  const total = learnCount + quizCount + buildCount + listeningCount + 2;
+  const beforeNew = learnCount + quizCount + buildCount + listeningCount;
+  const total = beforeNew + 7;
   const completed = {
     learn: state.phraseIndex,
     quiz: learnCount + state.quizIndex,
     build: learnCount + quizCount + state.builderIndex,
     listening: learnCount + quizCount + buildCount + state.listeningIndex,
+    'audio-build': beforeNew,
+    picture: beforeNew + 1,
+    cloze: beforeNew + 2,
+    dialogue: beforeNew + 3,
+    tone: beforeNew + 4,
     speak: total - 2,
     trace: total - 1,
     finish: total,
@@ -369,7 +389,7 @@ function renderHome() {
   const nextStarted = !!progress.lessons[next]?.checkpoint;
   return `<section class="hero panel">
     <div class="hero-copy"><div class="eyebrow">Your Chinese adventure</div><h1>Small steps.<br>Big discoveries.</h1>
-      <p>Listen, speak, translate, build sentences, and draw characters from <span class="hanzi">《中文》第二册</span>. One cheerful lesson at a time.</p>
+      <p>Listen, speak, translate, build sentences, explore pictures and tones, and draw characters from <span class="hanzi">《中文》第二册</span>. One cheerful lesson at a time.</p>
       <div class="hero-actions"><button class="btn btn-primary" data-action="start" data-lesson="${next}">${nextStarted ? `Continue Lesson ${next}` : completed ? 'Keep learning' : 'Start Lesson 1'} <span aria-hidden="true">→</span></button></div>
     </div><div class="mascot-scene" aria-hidden="true"><span class="spark one">✦</span><div class="mascot"><div class="mascot-mouth"></div><div class="mascot-top"></div><div class="mascot-tassel"></div></div><span class="spark two">✧</span></div>
   </section>
@@ -412,6 +432,92 @@ function practiceControls(nextAction, nextLabel) {
     ${practice.message ? `<div class="feedback ${practice.status === 'accepted' ? 'good' : 'try'}" role="status">${escapeHtml(practice.message)}</div>` : ''}
     <p class="hint" role="status">${practice.status === 'loading' ? escapeHtml(practice.progress || 'Loading the speech model…') : recording ? 'Say the phrase, then tap Done. Recording stops after 10 seconds.' : 'Recognition checks words, not pronunciation or tones.'}</p>
     <div class="card-actions"><button class="btn btn-mint" data-action="${nextAction}" ${done ? '' : 'disabled'}>${nextLabel} →</button></div>`;
+}
+
+function renderPhraseChoiceFeedback(phrase, correct) {
+  return `<div class="choice-feedback ${correct ? 'is-correct' : 'is-wrong'}" role="status"><strong class="choice-result">${correct ? '✓ Correct' : '✕ Try another choice'}</strong><span class="choice-caption">Your choice</span>${renderSpeakingPhrase(phrase, 'answer-phrase')}<span class="choice-meaning">Meaning: ${escapeHtml(phrase.english)}</span></div>`;
+}
+
+function renderAudioBuildCard() {
+  const question = state.exercises.audioBuild;
+  const chosen = new Set(state.audioSelected);
+  const bank = question.bankOrder.filter(index => !chosen.has(index));
+  const sentence = question.answer.join('');
+  return `<span class="exercise-tag">Listen & build</span><h2>Build the sentence you hear</h2>
+    <div class="speaker-symbol" aria-hidden="true">🔊</div><div class="card-actions"><button class="btn btn-primary" data-action="play-audio-build">🔊 Play the sentence</button><button class="btn btn-light" data-action="slow-audio-build">🐢 Play slowly</button></div>
+    <div class="builder-answer" aria-label="Your Chinese sentence">${state.audioSelected.length ? state.audioSelected.map(index => `<button class="chunk hanzi" data-action="remove-audio-chunk" data-index="${index}" aria-label="Remove ${escapeHtml(question.answer[index])}" ${state.audioChecked ? 'disabled' : ''}>${escapeHtml(question.answer[index])}</button>`).join('') : '<span class="answer-placeholder">Listen, then tap the Chinese pieces in order</span>'}</div>
+    <div class="builder-bank">${bank.map(index => `<button class="chunk hanzi" data-action="add-audio-chunk" data-index="${index}">${escapeHtml(question.answer[index])}</button>`).join('')}</div>
+    ${state.audioHint ? `<div class="feedback ${state.audioChecked ? 'good' : 'try'}" role="status">${escapeHtml(state.audioHint)}</div>` : ''}
+    ${state.audioChecked ? `<div class="audio-build-answer">${renderSpeakingPhrase({ chinese: sentence, pinyin: transcriptPinyin(sentence) })}<strong>${escapeHtml(question.english)}</strong></div>` : ''}
+    <div class="card-actions"><button class="btn btn-light" data-action="clear-audio-build" ${state.audioChecked ? 'disabled' : ''}>Start over</button><button class="btn btn-primary" data-action="check-audio-build" ${state.audioSelected.length !== question.answer.length || state.audioChecked ? 'disabled' : ''}>Check answer</button>${state.audioChecked ? '<button class="btn btn-mint" data-action="next-audio-build">Continue →</button>' : ''}</div>
+    <p class="hint">Tap a piece in your sentence to move it back. Tap a Chinese piece to hear it.</p>`;
+}
+
+function renderPictureCard(current) {
+  const question = state.exercises.picture;
+  const phrase = current.phrases[question.answer];
+  const answered = state.pictureSelected !== null;
+  const chosen = current.phrases[state.pictureLastChoice];
+  return `<span class="exercise-tag">Picture match</span><h2>Which picture matches this sentence?</h2>
+    ${renderSpeakingPhrase(phrase, 'exercise-prompt')}<button class="btn btn-light btn-small" data-action="play-picture">🔊 Hear the sentence</button>
+    <div class="picture-options">${question.options.map((option, index) => {
+      const correct = answered && option.phraseIndex === question.answer;
+      const wrong = state.pictureWrongOptions.has(option.phraseIndex);
+      return `<button class="option picture-choice ${correct ? 'correct' : wrong ? 'wrong' : ''}" data-action="choose-picture" data-picture="${option.phraseIndex}" aria-label="Picture ${index + 1}: ${escapeHtml(option.description)}${correct ? ', correct' : wrong ? ', wrong' : ''}" ${answered || wrong ? 'disabled' : ''}><span class="picture-scene scene-${index + 1}" aria-hidden="true">${escapeHtml(option.icons)}</span><span class="picture-number">Picture ${index + 1}</span>${correct || wrong ? `<span class="choice-mark" aria-hidden="true">${correct ? '✓' : '✕'}</span>` : ''}</button>`;
+    }).join('')}</div>
+    ${chosen ? renderPhraseChoiceFeedback(chosen, answered) : ''}
+    ${answered ? '<div class="card-actions"><button class="btn btn-mint" data-action="next-picture">Continue →</button></div>' : ''}`;
+}
+
+function renderClozeCard(current) {
+  const question = state.exercises.cloze;
+  const answered = state.clozeSelected !== null;
+  const chosen = question.options.find(option => option.text === state.clozeLastChoice);
+  return `<span class="exercise-tag">Missing word</span><h2>Choose the missing Chinese word</h2>
+    <p class="cloze-english">${escapeHtml(current.phrases[question.phraseIndex].english)}</p>
+    <div class="cloze-sentence hanzi"><span>${escapeHtml(question.prefix)}</span><span class="cloze-gap" aria-label="missing word">？</span><span>${escapeHtml(question.suffix)}</span></div>
+    <div class="options cloze-options">${question.options.map(option => {
+      const correct = answered && option.text === question.answer;
+      const wrong = state.clozeWrongOptions.has(option.text);
+      return `<button class="option hanzi option-hanzi ${correct ? 'correct' : wrong ? 'wrong' : ''}" data-action="choose-cloze" data-word="${escapeHtml(option.text)}" ${answered || wrong ? 'disabled' : ''}>${escapeHtml(option.text)}${correct || wrong ? `<span class="choice-mark" aria-label="${correct ? 'Correct' : 'Wrong'}">${correct ? '✓' : '✕'}</span>` : ''}</button>`;
+    }).join('')}</div>
+    ${chosen ? answered ? renderPhraseChoiceFeedback(current.phrases[question.phraseIndex], true) : `<div class="choice-feedback is-wrong" role="status"><strong class="choice-result">✕ Try another word</strong><span class="choice-caption">Your choice</span><span class="choice-pinyin">${escapeHtml(transcriptPinyin(chosen.text))}</span><strong class="choice-hanzi hanzi">${escapeHtml(chosen.text)}</strong><span class="choice-meaning">Meaning: ${escapeHtml(chosen.meaning)}</span></div>` : ''}
+    ${answered ? '<div class="card-actions"><button class="btn btn-mint" data-action="next-cloze">Continue →</button></div>' : ''}`;
+}
+
+function renderDialogueCard(current) {
+  const question = state.exercises.dialogue;
+  const answered = state.dialogueSelected !== null;
+  const chosen = current.phrases[state.dialogueLastChoice];
+  return `<span class="exercise-tag">Little dialogue</span><h2>Listen and reply</h2>
+    <div class="dialogue-bubble"><span class="dialogue-avatar" aria-hidden="true">🧒</span><div>${renderSpeakingPhrase({ chinese: question.prompt, pinyin: transcriptPinyin(question.prompt) }, 'dialogue-prompt')}<span class="dialogue-english">${escapeHtml(question.english)}</span></div></div>
+    <button class="btn btn-light btn-small" data-action="play-dialogue">🔊 Hear the question</button>
+    <div class="options dialogue-options">${question.options.map(index => {
+      const correct = answered && index === question.answer;
+      const wrong = state.dialogueWrongOptions.has(index);
+      return `<button class="option hanzi option-hanzi ${correct ? 'correct' : wrong ? 'wrong' : ''}" data-action="choose-dialogue" data-option="${index}" ${answered || wrong ? 'disabled' : ''}>${escapeHtml(current.phrases[index].chinese)}${correct || wrong ? `<span class="choice-mark" aria-label="${correct ? 'Correct' : 'Wrong'}">${correct ? '✓' : '✕'}</span>` : ''}</button>`;
+    }).join('')}</div>
+    ${chosen ? renderPhraseChoiceFeedback(chosen, answered) : ''}
+    ${answered ? `<p class="dialogue-speak-hint">Now say your reply aloud.</p>${practiceControls('next-dialogue', 'Continue')}` : ''}`;
+}
+
+function renderToneCard() {
+  const question = state.exercises.tone;
+  const answered = state.toneSelected !== null;
+  const correct = state.toneSelected === question.answer;
+  const toneNames = ['1st · level', '2nd · rising', '3rd · dipping', '4th · falling'];
+  const tonePaths = ['M4 23 L60 23', 'M4 38 L60 9', 'M4 12 Q23 46 38 33 Q48 24 60 11', 'M4 9 L60 38'];
+  return `<span class="exercise-tag">Tone detective</span><h2>Which tone do you hear?</h2>
+    <p class="tone-question">Listen to <strong class="hanzi">${escapeHtml(question.audio)}</strong>. Which tone is on <strong class="hanzi">${escapeHtml(question.hanzi)}</strong>?</p>
+    <div class="card-actions"><button class="btn btn-primary" data-action="play-tone">🔊 Play the word</button><button class="btn btn-light" data-action="slow-tone">🐢 Play slowly</button></div>
+    <div class="tone-options">${question.options.map((pinyin, index) => {
+      const rightChoice = correct && index === question.answer;
+      const wrongChoice = state.toneWrongOptions.has(index);
+      return `<button class="option tone-option ${rightChoice ? 'correct' : wrongChoice ? 'wrong' : ''}" data-action="choose-tone" data-tone="${index}" ${answered || wrongChoice ? 'disabled' : ''}><span class="tone-pinyin">${escapeHtml(pinyin)}</span><svg viewBox="0 0 64 48" aria-hidden="true"><path d="${tonePaths[index]}"/></svg><span class="tone-name">${toneNames[index]}</span>${rightChoice || wrongChoice ? `<span class="choice-mark" aria-label="${rightChoice ? 'Correct' : 'Wrong'}">${rightChoice ? '✓' : '✕'}</span>` : ''}</button>`;
+    }).join('')}</div>
+    ${state.toneLastChoice !== null ? `<div class="feedback ${correct ? 'good' : 'try'}" role="status">${correct ? `✓ Yes! ${escapeHtml(question.hanzi)} means ${escapeHtml(question.meaning)}. Listen for the ${toneNames[question.answer]} tone.` : `✕ That tone did not match. Listen again and try another.`}</div>` : state.toneSelected === 'skipped' ? `<div class="feedback try" role="status">${escapeHtml(question.hanzi)} is ${escapeHtml(question.options[question.answer])}: ${toneNames[question.answer]}.</div>` : ''}
+    <div class="card-actions">${answered ? '<button class="btn btn-mint" data-action="next-tone">Continue →</button>' : '<button class="btn btn-light btn-small" data-action="skip-tone">Skip this tone</button>'}</div>
+    <p class="hint">Listen for the pitch shape. This is a listening game; speech recognition does not grade your tones.</p>`;
 }
 
 function lessonCard() {
@@ -468,6 +574,11 @@ function lessonCard() {
       ${answered ? '<div class="card-actions"><button class="btn btn-mint" data-action="next-listening">Continue →</button></div>' : '<div class="card-actions"><button class="btn btn-light btn-small" data-action="skip-listening">Skip this word</button></div>'}
       <p class="hint">Audio uses the Chinese voice selected in Settings.</p>`;
   }
+  if (state.step === 'audio-build') return renderAudioBuildCard();
+  if (state.step === 'picture') return renderPictureCard(current);
+  if (state.step === 'cloze') return renderClozeCard(current);
+  if (state.step === 'dialogue') return renderDialogueCard(current);
+  if (state.step === 'tone') return renderToneCard();
   if (state.step === 'speak') {
     const item = current.phrases[0];
     return `<span class="exercise-tag">Your voice</span><h2>Say it in Chinese</h2><div class="speech-wave" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
@@ -480,7 +591,7 @@ function lessonCard() {
   }
   const earned = Math.max(1, Math.min(3, Math.ceil((state.right / Math.max(1, state.total)) * 3)));
   return `<span class="exercise-tag">Lesson complete</span><div class="result-stars" aria-label="${earned} stars">${'★'.repeat(earned)}${'☆'.repeat(3 - earned)}</div>
-    <h2>Lovely work on <span class="hanzi">${escapeHtml(current.title)}</span>!</h2><p>You spoke, translated, built sentences, listened for Chinese words, and drew a character.</p>
+    <h2>Lovely work on <span class="hanzi">${escapeHtml(current.title)}</span>!</h2><p>You spoke, translated, built sentences, matched a picture, finished a dialogue, listened for tones, and drew a character.</p>
     <div class="result-stats"><span class="stat-pill">${state.right}/${state.total} first-try answers</span><span class="stat-pill">${current.phrases.length} phrases explored</span><span class="stat-pill">1 character drawn</span></div>
     <div class="card-actions"><button class="btn btn-light" data-action="start" data-lesson="${current.number}">Play again</button>${current.number < 12 ? `<button class="btn btn-primary" data-action="start" data-lesson="${current.number + 1}">Next lesson →</button>` : `<button class="btn btn-primary" data-action="home">See my path →</button>`}</div>`;
 }
@@ -692,12 +803,13 @@ function recognizeChinese(isCurrent, phrases, onWords, onError, onPhase) {
 }
 
 function startLessonPractice() {
-  if (state.view !== 'lesson' || !['learn', 'speak'].includes(state.step)) return;
+  if (state.view !== 'lesson' || !['learn', 'dialogue', 'speak'].includes(state.step)) return;
+  if (state.step === 'dialogue' && state.dialogueSelected === null) return;
   const practice = state.practice;
   if (['accepted', 'skipped', 'loading', 'listening', 'recording', 'processing'].includes(practice.status)) return;
   const step = state.step;
   const lessonData = lesson();
-  const index = step === 'learn' ? state.phraseIndex : 0;
+  const index = step === 'learn' ? state.phraseIndex : step === 'dialogue' ? state.exercises.dialogue.answer : 0;
   const expected = lessonData.phrases[index].chinese;
   const isCurrent = () => state.view === 'lesson' && state.step === step && state.practice === practice &&
     ['loading', 'listening', 'recording', 'processing'].includes(practice.status);
@@ -796,7 +908,8 @@ document.addEventListener('click', event => {
     if (finishActiveSpeech()) { state.practice.status = 'processing'; render(); }
     return;
   }
-  if (action === 'practice-skip' && state.view === 'lesson' && ['learn', 'speak'].includes(state.step)) {
+  if (action === 'practice-skip' && state.view === 'lesson' && ['learn', 'dialogue', 'speak'].includes(state.step)) {
+    if (state.step === 'dialogue' && state.dialogueSelected === null) return;
     stopListening();
     state.practice.status = 'skipped';
     state.practice.message = 'You can move on and practise this phrase another time.';
@@ -811,7 +924,7 @@ document.addEventListener('click', event => {
     saveLessonCheckpoint();
     return render();
   }
-  if (action === 'speak-phrase') return speak(lesson().phrases[state.step === 'learn' ? state.phraseIndex : 0].chinese);
+  if (action === 'speak-phrase') return speak(lesson().phrases[state.step === 'learn' ? state.phraseIndex : state.step === 'dialogue' ? state.exercises.dialogue.answer : 0].chinese);
   if (action === 'speak-quiz') return speak(lesson().phrases[state.exercises.translations[state.quizIndex].phraseIndex].chinese);
   if (action === 'choose' && state.step === 'quiz' && state.quizSelected === null) {
     const option = Number(target.dataset.option);
@@ -886,10 +999,105 @@ document.addEventListener('click', event => {
   if (action === 'next-listening' && state.step === 'listening' && state.listeningSelected !== null) {
     state.listeningSelected = null; state.listeningLastChoice = null; state.listeningWrongOptions = new Set();
     if (++state.listeningIndex >= state.exercises.listening.length) {
-      state.step = 'speak'; state.practice = newPractice(); saveLessonCheckpoint(); return render();
+      state.step = 'audio-build'; saveLessonCheckpoint(); render(); speak(state.exercises.audioBuild.answer.join('')); return;
     }
     saveLessonCheckpoint();
     render(); speak(state.exercises.listening[state.listeningIndex].answer.text); return;
+  }
+  if (action === 'play-audio-build' && state.step === 'audio-build') return speak(state.exercises.audioBuild.answer.join(''));
+  if (action === 'slow-audio-build' && state.step === 'audio-build') return speak(state.exercises.audioBuild.answer.join(''), 'zh-CN', .62);
+  if (action === 'add-audio-chunk' && state.step === 'audio-build' && !state.audioChecked) {
+    const index = Number(target.dataset.index);
+    const question = state.exercises.audioBuild;
+    if (!Number.isInteger(index) || index < 0 || index >= question.answer.length || state.audioSelected.includes(index)) return;
+    state.audioSelected.push(index); state.audioHint = ''; render(); speak(question.answer[index]); return;
+  }
+  if (action === 'remove-audio-chunk' && state.step === 'audio-build' && !state.audioChecked) {
+    const index = Number(target.dataset.index);
+    state.audioSelected = state.audioSelected.filter(item => item !== index);
+    state.audioHint = ''; render();
+    if (Number.isInteger(index) && state.exercises.audioBuild.answer[index]) speak(state.exercises.audioBuild.answer[index]);
+    return;
+  }
+  if (action === 'clear-audio-build' && state.step === 'audio-build' && !state.audioChecked) {
+    state.audioSelected = []; state.audioHint = ''; return render();
+  }
+  if (action === 'check-audio-build' && state.step === 'audio-build' && !state.audioChecked) {
+    const question = state.exercises.audioBuild;
+    if (state.audioSelected.length !== question.answer.length) return;
+    const correct = state.audioSelected.every((index, position) => index === position);
+    if (!state.audioAttempted) { state.total++; state.audioAttempted = true; if (correct) state.right++; }
+    if (correct) { state.audioChecked = true; state.audioHint = '✓ You heard and built the sentence!'; chime(); }
+    else state.audioHint = '✕ The order does not match. Listen again and rearrange the pieces.';
+    return render();
+  }
+  if (action === 'next-audio-build' && state.step === 'audio-build' && state.audioChecked) {
+    state.step = 'picture'; saveLessonCheckpoint(); return render();
+  }
+  if (action === 'play-picture' && state.step === 'picture') return speak(lesson().phrases[state.exercises.picture.answer].chinese);
+  if (action === 'choose-picture' && state.step === 'picture' && state.pictureSelected === null) {
+    const index = Number(target.dataset.picture);
+    const question = state.exercises.picture;
+    if (!question.options.some(option => option.phraseIndex === index) || state.pictureWrongOptions.has(index)) return;
+    state.pictureLastChoice = index;
+    const firstTry = state.pictureWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (index === question.answer) { state.pictureSelected = index; if (firstTry) state.right++; chime(); }
+    else state.pictureWrongOptions.add(index);
+    render(); speak(lesson().phrases[index].chinese); return;
+  }
+  if (action === 'next-picture' && state.step === 'picture' && state.pictureSelected !== null) {
+    state.step = 'cloze'; saveLessonCheckpoint(); return render();
+  }
+  if (action === 'choose-cloze' && state.step === 'cloze' && state.clozeSelected === null) {
+    const word = target.dataset.word;
+    const question = state.exercises.cloze;
+    if (!question.options.some(option => option.text === word) || state.clozeWrongOptions.has(word)) return;
+    state.clozeLastChoice = word;
+    const firstTry = state.clozeWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (word === question.answer) { state.clozeSelected = word; if (firstTry) state.right++; chime(); }
+    else state.clozeWrongOptions.add(word);
+    render(); speak(word); return;
+  }
+  if (action === 'next-cloze' && state.step === 'cloze' && state.clozeSelected !== null) {
+    state.step = 'dialogue'; saveLessonCheckpoint(); render(); speak(state.exercises.dialogue.prompt); return;
+  }
+  if (action === 'play-dialogue' && state.step === 'dialogue') return speak(state.exercises.dialogue.prompt);
+  if (action === 'choose-dialogue' && state.step === 'dialogue' && state.dialogueSelected === null) {
+    const index = Number(target.dataset.option);
+    const question = state.exercises.dialogue;
+    if (!question.options.includes(index) || state.dialogueWrongOptions.has(index)) return;
+    state.dialogueLastChoice = index;
+    const firstTry = state.dialogueWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (index === question.answer) { state.dialogueSelected = index; if (firstTry) state.right++; chime(); }
+    else state.dialogueWrongOptions.add(index);
+    render(); speak(lesson().phrases[index].chinese); return;
+  }
+  if (action === 'next-dialogue' && state.step === 'dialogue' && state.dialogueSelected !== null && ['accepted', 'skipped'].includes(state.practice.status)) {
+    state.practice = newPractice(); state.step = 'tone'; saveLessonCheckpoint(); render(); speak(state.exercises.tone.audio); return;
+  }
+  if (action === 'play-tone' && state.step === 'tone') return speak(state.exercises.tone.audio);
+  if (action === 'slow-tone' && state.step === 'tone') return speak(state.exercises.tone.audio, 'zh-CN', .62);
+  if (action === 'choose-tone' && state.step === 'tone' && state.toneSelected === null) {
+    const index = Number(target.dataset.tone);
+    const question = state.exercises.tone;
+    if (!Number.isInteger(index) || index < 0 || index > 3 || state.toneWrongOptions.has(index)) return;
+    state.toneLastChoice = index;
+    const firstTry = state.toneWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (index === question.answer) { state.toneSelected = index; if (firstTry) state.right++; chime(); }
+    else state.toneWrongOptions.add(index);
+    render(); if (index !== question.answer) speak(question.audio); return;
+  }
+  if (action === 'skip-tone' && state.step === 'tone' && state.toneSelected === null) {
+    state.toneSelected = 'skipped'; state.toneLastChoice = null;
+    if (!state.toneWrongOptions.size) state.total++;
+    return render();
+  }
+  if (action === 'next-tone' && state.step === 'tone' && state.toneSelected !== null) {
+    state.step = 'speak'; state.practice = newPractice(); saveLessonCheckpoint(); return render();
   }
   if (action === 'next-trace') {
     if (!['accepted', 'skipped'].includes(state.practice.status)) return;

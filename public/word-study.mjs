@@ -13,6 +13,7 @@ export const wordMeanings = {
   发芽: 'to sprout', 开花: 'to bloom', 名字: 'name', 长江: 'Yangtze River', 黄河: 'Yellow River',
   我们: 'we', 你们: 'you (plural)', 放假: 'to have a holiday', 哪儿: 'where', 动物园: 'zoo',
   动物: 'animal', 假期: 'holiday', 快乐: 'happy',
+  星期几: 'what day of the week', 什么: 'what', 知道: 'to know', 怎么: 'how', 问: 'to ask',
 };
 
 export const characterMeanings = {
