@@ -1,5 +1,6 @@
 const LESSONS_COOKIE = 'little_lantern_lessons_v1';
 const REVIEW_COOKIE = 'little_lantern_review_v1';
+const WORKBOOK_COOKIE = 'little_lantern_workbook_v1';
 const COOKIE_AGE = 60 * 60 * 24 * 365;
 const STEPS = new Set(['learn', 'quiz', 'build', 'listening', 'audio-build', 'picture', 'cloze', 'dialogue', 'tone', 'speak', 'trace']);
 
@@ -45,7 +46,14 @@ function normalizeProgress(source) {
       ...(typeof item.completedAt === 'string' ? { completedAt: item.completedAt } : {}),
     };
   }
-  return { lessons, speechHomework };
+  const workbookHomework = {};
+  for (let number = 1; number <= 12; number++) {
+    const item = objectOrEmpty(objectOrEmpty(saved.workbookHomework)[number]);
+    if (!Object.keys(item).length) continue;
+    const completed = item.completed === true;
+    workbookHomework[number] = { completed, index: completed ? 7 : numberIn(item.index, 6) };
+  }
+  return { lessons, speechHomework, workbookHomework };
 }
 
 function encode(value) {
@@ -83,15 +91,18 @@ export function readProgress(browser = globalThis, legacyKey = 'little-lantern-p
   catch { /* Older saved data may be unavailable or malformed. */ }
   let lessonCookie = null;
   let reviewCookie = null;
+  let workbookCookie = null;
   try {
     lessonCookie = cookieValue(LESSONS_COOKIE, browser);
     reviewCookie = cookieValue(REVIEW_COOKIE, browser);
+    workbookCookie = cookieValue(WORKBOOK_COOKIE, browser);
   } catch { /* Cookies may be blocked. */ }
   const progress = normalizeProgress({
     lessons: lessonCookie ?? legacy?.lessons,
     speechHomework: reviewCookie ?? legacy?.speechHomework,
+    workbookHomework: workbookCookie ?? legacy?.workbookHomework,
   });
-  if ((lessonCookie === null || reviewCookie === null) && Object.keys(objectOrEmpty(legacy)).length) {
+  if ((lessonCookie === null || reviewCookie === null || workbookCookie === null) && Object.keys(objectOrEmpty(legacy)).length) {
     saveProgress(progress, browser, legacyKey);
   }
   return progress;
@@ -102,7 +113,8 @@ export function saveProgress(progress, browser = globalThis, legacyKey = 'little
   try {
     const lessonsSaved = writeCookie(LESSONS_COOKIE, clean.lessons, browser);
     const reviewSaved = writeCookie(REVIEW_COOKIE, clean.speechHomework, browser);
-    if (lessonsSaved && reviewSaved) {
+    const workbookSaved = writeCookie(WORKBOOK_COOKIE, clean.workbookHomework, browser);
+    if (lessonsSaved && reviewSaved && workbookSaved) {
       try { browser.localStorage?.removeItem(legacyKey); } catch { /* Cookies are saved. */ }
       return true;
     }

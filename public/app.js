@@ -1,10 +1,11 @@
 import { evaluateSpeechAttempt } from './speech-check.mjs';
 import { prepareBrowserRecognizer, releaseBrowserRecognizer, transcribeInBrowser } from './browser-asr.mjs';
 import { recordedAudioToSamples } from './audio-prep.mjs';
-import { tokenizePhrase } from './word-study.mjs';
+import { tokenizePhrase, wordMeanings, characterMeanings } from './word-study.mjs';
 import { chooseChineseVoice, voicePitch } from './voice-style.mjs';
 import { renderTranscript, transcriptPinyin } from './transcript-pinyin.mjs';
 import { buildLessonExercises } from './exercise-data.mjs';
+import { buildWorkbookHomework } from './workbook-homework.mjs';
 import { readProgress, saveProgress as persistProgress } from './progress-store.mjs';
 
 const app = document.getElementById('app');
@@ -43,6 +44,7 @@ const state = {
   practice: newPractice(), traceDrawn: false,
   wordDetail: null,
   homeworkLesson: 1, homeworkMode: 'chinese', homework: null,
+  workbookLesson: 1, workbook: null,
   speechRecognizer: readSpeechRecognizer(), voiceStyle: readVoiceStyle(), settingsReturnView: 'home',
 };
 
@@ -300,6 +302,9 @@ function nav(view) {
   stopListening();
   if (state.wordDetail) closeWordDialog();
   if (state.homework) { state.homework.listening = false; state.homework.capturePhase = ''; }
+  if (state.workbook?.practice && ['loading', 'listening', 'recording', 'processing'].includes(state.workbook.practice.status)) {
+    state.workbook.practice = { ...newPractice(), message: 'Ready to try reading again.' };
+  }
   if (['loading', 'listening', 'recording', 'processing'].includes(state.practice.status)) {
     state.practice = { ...newPractice(), message: 'Ready to try speaking again.' };
   }
@@ -403,7 +408,7 @@ function renderHome() {
 }
 
 function renderSettings() {
-  const backLabel = state.settingsReturnView === 'lesson' ? 'Back to lesson' : state.settingsReturnView === 'review' ? 'Back to Review' : 'Back';
+  const backLabel = state.settingsReturnView === 'lesson' ? 'Back to lesson' : state.settingsReturnView === 'review' ? 'Back to Review' : state.settingsReturnView === 'workbook' ? 'Back to Homework' : 'Back';
   const voiceChoice = chooseChineseVoice(window.speechSynthesis?.getVoices?.() || [], 'zh-CN', state.voiceStyle);
   const voiceStatus = !window.speechSynthesis ? 'Speech playback is unavailable in this browser.'
     : !voiceChoice.voice ? 'The browser has not listed its Chinese voices yet.'
@@ -593,7 +598,7 @@ function lessonCard() {
   return `<span class="exercise-tag">Lesson complete</span><div class="result-stars" aria-label="${earned} stars">${'★'.repeat(earned)}${'☆'.repeat(3 - earned)}</div>
     <h2>Lovely work on <span class="hanzi">${escapeHtml(current.title)}</span>!</h2><p>You spoke, translated, built sentences, matched a picture, finished a dialogue, listened for tones, and drew a character.</p>
     <div class="result-stats"><span class="stat-pill">${state.right}/${state.total} first-try answers</span><span class="stat-pill">${current.phrases.length} phrases explored</span><span class="stat-pill">1 character drawn</span></div>
-    <div class="card-actions"><button class="btn btn-light" data-action="start" data-lesson="${current.number}">Play again</button>${current.number < 12 ? `<button class="btn btn-primary" data-action="start" data-lesson="${current.number + 1}">Next lesson →</button>` : `<button class="btn btn-primary" data-action="home">See my path →</button>`}</div>`;
+    <div class="card-actions"><button class="btn btn-light" data-action="start" data-lesson="${current.number}">Play again</button><button class="btn btn-mint" data-action="lesson-workbook" data-lesson="${current.number}">Workbook homework ✏️</button>${current.number < 12 ? `<button class="btn btn-primary" data-action="start" data-lesson="${current.number + 1}">Next lesson →</button>` : `<button class="btn btn-primary" data-action="home">See my path →</button>`}</div>`;
 }
 
 const buildEnglish = {
@@ -743,15 +748,159 @@ function renderReview() {
     </section>`;
 }
 
+const workbookLabels = {
+  write: 'Write a character', strokes: 'Count the strokes', parts: 'Build a character',
+  spell: 'Choose the word', cloze: 'Fill the blank', order: 'Put words in order', read: 'Read aloud',
+};
+const workbookOptionMeanings = { 画: 'draw', 星期: 'week or weekday', 具: 'tool', 飞: 'fly', 条: 'measure word for long things', 本: 'measure word for books', 告诉: 'tell', 游泳: 'swim', 旅游: 'travel' };
+const workbookCard = () => state.workbook?.pack.cards[state.workbook.index];
+function startWorkbook(number, replay = false) {
+  stopListening();
+  if (state.wordDetail) closeWordDialog();
+  const lessonData = book.lessons.find(item => item.number === number);
+  if (!lessonData) return;
+  const saved = progress.workbookHomework[number];
+  state.workbookLesson = number;
+  state.workbook = {
+    lesson: number, pack: buildWorkbookHomework(lessonData),
+    index: replay || saved?.completed ? 0 : saved?.index || 0,
+    choice: null, lastChoice: null, wrong: new Set(), selected: [], checked: false,
+    drawn: false, hint: '', practice: newPractice(),
+  };
+  state.view = 'workbook';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function advanceWorkbook() {
+  const homework = state.workbook;
+  if (!homework || homework.index >= homework.pack.cards.length) return;
+  homework.index++;
+  homework.choice = null; homework.lastChoice = null; homework.wrong = new Set();
+  homework.selected = []; homework.checked = false; homework.drawn = false;
+  homework.hint = ''; homework.practice = newPractice();
+  progress.workbookHomework[homework.lesson] = {
+    index: homework.index, completed: homework.index === homework.pack.cards.length,
+  };
+  saveProgress();
+  if (homework.index === homework.pack.cards.length) chime();
+  render();
+}
+function workbookChoiceOptions(card) {
+  const homework = state.workbook;
+  return `<div class="workbook-options">${card.options.map((option, index) => {
+    const text = String(option);
+    const right = homework.choice === text;
+    const wrong = homework.wrong.has(text);
+    return `<button type="button" class="option ${card.type === 'strokes' ? '' : 'hanzi option-hanzi'} ${right ? 'correct' : wrong ? 'wrong' : ''}" data-action="workbook-choose" data-option="${index}" ${homework.choice !== null || wrong ? 'disabled' : ''}>${escapeHtml(text)}${right || wrong ? `<span class="choice-mark" aria-label="${right ? 'Correct' : 'Wrong'}">${right ? '✓' : '✕'}</span>` : ''}</button>`;
+  }).join('')}</div>`;
+}
+function workbookAnswerNote(card) {
+  if (state.workbook.choice === null && !state.workbook.checked) return '';
+  const sentence = card.type === 'cloze' ? card.prefix + card.answer + card.suffix
+    : card.type === 'order' ? card.answer.join('') : '';
+  if (sentence) return `<div class="workbook-answer"><div class="workbook-answer-pinyin">${escapeHtml(transcriptPinyin(sentence))}</div><div class="workbook-answer-chinese hanzi">${escapeHtml(sentence)}</div><p>${escapeHtml(card.english)}</p><button class="btn btn-light btn-small" data-action="workbook-hear" data-text="${escapeHtml(sentence)}">🔊 Hear it</button></div>`;
+  if (card.type === 'strokes') return `<div class="workbook-answer"><strong class="hanzi">${escapeHtml(card.character)}</strong><p>${card.count} strokes</p></div>`;
+  const meaning = card.meaning || (card.type === 'spell' ? wordMeanings[card.answer] : characterMeanings[card.answer] || wordMeanings[card.answer]);
+  return `<div class="workbook-answer"><strong class="hanzi">${escapeHtml(card.answer)}</strong>${meaning ? `<p>${escapeHtml(meaning)}</p>` : ''}</div>`;
+}
+function renderWorkbookTask(card) {
+  const homework = state.workbook;
+  if (card.type === 'write') return `<h2>Write <span class="hanzi">${escapeHtml(card.character)}</span></h2>
+    <p>Trace this character in the square, then compare it with the guide.</p>
+    <div class="trace-wrap workbook-trace"><span class="trace-guide hanzi">${escapeHtml(card.character)}</span><canvas id="workbook-trace-canvas" width="520" height="520" aria-label="Drawing area for ${escapeHtml(card.character)}"></canvas></div>
+    <div class="card-actions"><button class="btn btn-light" data-action="workbook-clear-drawing">Clear drawing</button><button class="btn btn-primary" data-action="workbook-next" ${homework.drawn ? '' : 'disabled'}>Continue →</button></div><p class="hint">At least one stroke unlocks Continue. Your handwriting is not automatically graded.</p>`;
+  if (card.type === 'strokes') return `<h2>How many strokes?</h2><div class="workbook-big-char hanzi">${escapeHtml(card.character)}</div><p>Count each pen stroke in this character.</p>${workbookChoiceOptions(card)}${workbookFeedback(card)}${homework.choice !== null ? workbookAnswerNote(card) : ''}`;
+  if (card.type === 'parts') return `<h2>Put the parts together</h2><div class="workbook-parts hanzi"><span>${escapeHtml(card.pieces[0])}</span><b>+</b><span>${escapeHtml(card.pieces[1])}</span><b>=</b><span>?</span></div><p>Which character do these parts make?</p>${workbookChoiceOptions(card)}${workbookFeedback(card)}${homework.choice !== null ? workbookAnswerNote(card) : ''}`;
+  if (card.type === 'spell') return `<h2>Choose the Chinese word</h2><p class="workbook-clue">${escapeHtml(wordMeanings[card.answer] || 'Listen and find the matching word.')}</p><button class="btn btn-light btn-small" data-action="workbook-hear" data-text="${escapeHtml(card.answer)}">🔊 Hear the word</button>${workbookChoiceOptions(card)}${workbookFeedback(card)}${homework.choice !== null ? workbookAnswerNote(card) : ''}`;
+  if (card.type === 'cloze') return `<h2>Fill the blank</h2><div class="workbook-sentence hanzi">${escapeHtml(card.prefix)}<span class="workbook-blank">?</span>${escapeHtml(card.suffix)}</div><p>Choose the missing Chinese word.</p>${workbookChoiceOptions(card)}${workbookFeedback(card)}${homework.choice !== null ? workbookAnswerNote(card) : ''}`;
+  if (card.type === 'order') {
+    const bank = card.bankOrder.filter(index => !homework.selected.includes(index));
+    return `<h2>Put the words in order</h2><p class="workbook-clue">${escapeHtml(card.english)}</p>
+      <div class="builder-answer workbook-builder" aria-label="Your Chinese sentence">${homework.selected.length ? homework.selected.map(index => `<button class="chunk hanzi" data-action="workbook-remove-chunk" data-index="${index}" ${homework.checked ? 'disabled' : ''}>${escapeHtml(card.answer[index])}</button>`).join('') : '<span class="answer-placeholder">Tap the Chinese pieces in order</span>'}</div>
+      <div class="builder-bank workbook-builder">${bank.map(index => `<button class="chunk hanzi" data-action="workbook-add-chunk" data-index="${index}">${escapeHtml(card.answer[index])}</button>`).join('')}</div>
+      ${homework.hint ? `<div class="feedback ${homework.checked ? 'good' : 'try'}" role="status">${escapeHtml(homework.hint)}</div>` : ''}
+      ${homework.checked ? workbookAnswerNote(card) : ''}
+      <div class="card-actions"><button class="btn btn-light" data-action="workbook-clear-order" ${homework.checked ? 'disabled' : ''}>Start over</button><button class="btn btn-primary" data-action="workbook-check-order" ${homework.selected.length !== card.answer.length || homework.checked ? 'disabled' : ''}>Check answer</button>${homework.checked ? '<button class="btn btn-mint" data-action="workbook-next">Continue →</button>' : ''}</div>`;
+  }
+  const practice = homework.practice;
+  const busy = ['loading', 'listening', 'recording', 'processing'].includes(practice.status);
+  const accepted = ['accepted', 'skipped'].includes(practice.status);
+  return `<h2>Read this aloud</h2>${renderSpeakingPhrase(card.phrase, 'workbook-read-phrase')}
+    <p class="word-tap-hint">Tap a word to hear it, see its meaning, and watch how to write it.</p>
+    ${practice.transcript ? renderTranscript(practice.transcript) : ''}
+    ${practice.message ? `<div class="feedback ${accepted ? 'good' : 'try'}" role="status">${escapeHtml(practice.message)}</div>` : ''}
+    <div class="card-actions"><button class="btn btn-light" data-action="workbook-hear" data-text="${escapeHtml(card.phrase.chinese)}">🔊 Hear it</button>
+      ${accepted ? '' : `<button class="btn btn-primary" data-action="${['listening', 'recording'].includes(practice.status) ? 'workbook-done' : 'workbook-speak'}" ${busy && !['listening', 'recording'].includes(practice.status) ? 'disabled' : ''}>${practice.status === 'loading' ? 'Loading speech model…' : practice.status === 'processing' ? 'Checking speech…' : ['listening', 'recording'].includes(practice.status) ? '✓ Done' : '🎙 Speak it'}</button><button class="btn btn-light" data-action="workbook-skip">Skip speaking</button>`}
+      ${accepted ? '<button class="btn btn-mint" data-action="workbook-next">Continue →</button>' : ''}</div>
+    <p class="hint" role="status">${escapeHtml(practice.progress || (busy ? 'Speak the sentence, then tap Done.' : 'A close word match counts. The recognizer does not grade tones or pronunciation quality.'))}</p>`;
+}
+function workbookFeedback(card) {
+  const homework = state.workbook;
+  const isCorrect = homework.choice !== null;
+  const selected = homework.lastChoice;
+  const chosenText = card.type === 'cloze' ? card.prefix + selected + card.suffix : selected;
+  const meaning = wordMeanings[selected] || characterMeanings[selected] || workbookOptionMeanings[selected];
+  const selectedNote = !isCorrect && selected !== null && card.type !== 'strokes'
+    ? `<div class="workbook-attempt"><div class="workbook-answer-pinyin">${escapeHtml(transcriptPinyin(chosenText))}</div><div class="workbook-answer-chinese hanzi">${escapeHtml(chosenText)}</div><p>${meaning ? `Your chosen ${card.type === 'parts' ? 'character' : 'word'} means “${escapeHtml(meaning)}.”` : 'This choice does not make the word asked for here.'}</p></div>` : '';
+  return `${homework.lastChoice !== null ? `<div class="feedback ${isCorrect ? 'good' : 'try'}" role="status">${isCorrect ? card.type === 'strokes' ? '✓ Correct stroke count!' : '✓ Correct! Listen and read the answer below.' : '✕ Try another choice. The correct answer stays hidden.'}</div>` : ''}
+    ${selectedNote}
+    ${isCorrect ? '<div class="card-actions"><button class="btn btn-mint" data-action="workbook-next">Continue →</button></div>' : ''}`;
+}
+function renderWorkbook() {
+  const homework = state.workbook;
+  const selected = book.lessons.find(item => item.number === state.workbookLesson);
+  const selectedPack = buildWorkbookHomework(selected);
+  if (!homework) {
+    const saved = progress.workbookHomework[state.workbookLesson];
+    return `<div class="section-intro workbook-intro"><span class="eyebrow">Book 2 · Workbooks A and B</span><h1 class="page-title">Workbook homework ✏️</h1><p class="lead">Pick a lesson. Each seven-card set follows pages from that lesson’s printed workbook, with short interactive versions of its exercises.</p></div>
+      <section class="workbook-setup panel"><h2>Choose a lesson</h2><label class="homework-field">Lesson<select id="workbook-lesson">${book.lessons.map(item => `<option value="${item.number}" ${state.workbookLesson === item.number ? 'selected' : ''}>${item.number}. ${escapeHtml(item.title)} · ${escapeHtml(item.englishTitle)}</option>`).join('')}</select></label>
+      <div class="workbook-source"><strong>Workbook ${selectedPack.booklet}</strong><span>Printed pages ${selectedPack.firstPage}–${selectedPack.lastPage}</span><span>7 activities · 5 workbook days</span></div>
+      <div class="workbook-card-list">${selectedPack.cards.map(card => `<span>${escapeHtml(workbookLabels[card.type])} <small>p. ${card.page}</small></span>`).join('')}</div>
+      <p class="homework-note">These are selected, adapted exercises. Wrong answers stay on the same card until corrected. Drawing and speaking have clear practice checks; the microphone can mishear a child.</p>
+      <div class="card-actions"><button class="btn btn-primary" data-action="workbook-start">${saved?.completed ? 'Play again' : saved?.index ? `Continue card ${saved.index + 1}` : 'Start homework'} →</button></div></section>`;
+  }
+  const lessonData = book.lessons.find(item => item.number === homework.lesson);
+  const total = homework.pack.cards.length;
+  if (homework.index >= total) return `<div class="section-intro workbook-intro"><button class="review-back" data-action="workbook-back">← Choose another lesson</button><span class="eyebrow">Workbook ${homework.pack.booklet} · Lesson ${homework.lesson}</span><h1 class="page-title">Homework complete! ★</h1></div>
+    <section class="workbook-card panel workbook-done"><div class="result-stars" aria-hidden="true">✓</div><h2>Great work on <span class="hanzi">${escapeHtml(lessonData.title)}</span>!</h2><p>You finished seven workbook activities. Play again any time to practise the words and reading card.</p><div class="card-actions"><button class="btn btn-light" data-action="workbook-replay">Play again</button><button class="btn btn-primary" data-action="workbook-back">Choose another lesson →</button></div></section>`;
+  const card = workbookCard();
+  return `<div class="section-intro workbook-intro"><button class="review-back" data-action="workbook-back">← Choose another lesson</button><span class="eyebrow">Workbook ${card.booklet} · Lesson ${homework.lesson} · ${card.day}</span><h1 class="page-title hanzi">${escapeHtml(lessonData.title)}</h1><p class="lead">Adapted from printed workbook page ${card.page}.</p></div>
+    <div class="homework-top"><span>${homework.index} of ${total} cards finished</span><span>${escapeHtml(workbookLabels[card.type])} · p. ${card.page}</span></div>
+    <div class="homework-meter" role="progressbar" aria-valuenow="${homework.index}" aria-valuemin="0" aria-valuemax="${total}" aria-label="Workbook homework progress"><span style="width:${100 * homework.index / total}%"></span></div>
+    <section class="workbook-card panel" aria-live="polite"><span class="exercise-tag">Card ${homework.index + 1} of ${total} · ${escapeHtml(card.day)}</span>${renderWorkbookTask(card)}</section>`;
+}
+
+function startWorkbookPractice() {
+  const homework = state.workbook;
+  const card = workbookCard();
+  if (state.view !== 'workbook' || card?.type !== 'read') return;
+  const practice = homework.practice;
+  if (['accepted', 'skipped', 'loading', 'listening', 'recording', 'processing'].includes(practice.status)) return;
+  const expected = card.phrase.chinese;
+  const isCurrent = () => state.view === 'workbook' && state.workbook === homework && homework.practice === practice && workbookCard() === card &&
+    ['loading', 'listening', 'recording', 'processing'].includes(practice.status);
+  practice.message = ''; practice.transcript = ''; practice.progress = '';
+  recognizeChinese(isCurrent, [expected], (words, alternatives) => {
+    const result = evaluateSpeechAttempt(expected, alternatives, []);
+    practice.transcript = result.transcript;
+    practice.status = ['exact', 'close'].includes(result.kind) ? 'accepted' : 'retry';
+    practice.message = practice.status === 'accepted' ? 'The recognizer heard the expected words. ✓' : 'I heard different words. Listen and try again, or skip speaking.';
+    if (practice.status === 'accepted') chime();
+    render();
+  }, message => { practice.status = 'retry'; practice.message = `${message} Try again or skip speaking.`; render(); },
+  (phase, progressMessage) => { practice.status = phase; practice.progress = progressMessage || ''; render(); });
+}
+
 function render() {
   clearWordWriters();
-  app.innerHTML = (state.view === 'lesson' ? renderLesson() : state.view === 'review' ? renderReview() : state.view === 'settings' ? renderSettings() : renderHome()) + renderWordDialog();
+  app.innerHTML = (state.view === 'lesson' ? renderLesson() : state.view === 'review' ? renderReview() : state.view === 'workbook' ? renderWorkbook() : state.view === 'settings' ? renderSettings() : renderHome()) + renderWordDialog();
   const activeNav = state.view === 'lesson' ? 'home' : state.view;
   document.querySelectorAll('[data-nav]').forEach(button => {
     button.classList.toggle('active', button.dataset.nav === activeNav);
     button.setAttribute('aria-current', button.dataset.nav === activeNav ? 'page' : 'false');
   });
   if (state.view === 'lesson' && state.step === 'trace') setupTrace();
+  if (state.view === 'workbook' && workbookCard()?.type === 'write') setupWorkbookTrace();
   if (state.wordDetail) setupWordDialog();
 }
 
@@ -763,6 +912,23 @@ function setupTrace() {
   let drawing = false;
   const point = event => { const rect = canvas.getBoundingClientRect(); return { x: (event.clientX - rect.left) * canvas.width / rect.width, y: (event.clientY - rect.top) * canvas.height / rect.height }; };
   canvas.onpointerdown = event => { drawing = true; state.traceDrawn = true; document.querySelector('[data-action="finish-lesson"]').disabled = false; canvas.setPointerCapture(event.pointerId); const p = point(event); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + .1, p.y + .1); ctx.stroke(); };
+  canvas.onpointermove = event => { if (!drawing) return; const p = point(event); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+  canvas.onpointerup = canvas.onpointercancel = () => { drawing = false; };
+}
+
+function setupWorkbookTrace() {
+  const canvas = document.getElementById('workbook-trace-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#ec755f'; ctx.lineWidth = 13; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  let drawing = false;
+  const point = event => { const rect = canvas.getBoundingClientRect(); return { x: (event.clientX - rect.left) * canvas.width / rect.width, y: (event.clientY - rect.top) * canvas.height / rect.height }; };
+  canvas.onpointerdown = event => {
+    drawing = true; state.workbook.drawn = true;
+    document.querySelector('[data-action="workbook-next"]').disabled = false;
+    canvas.setPointerCapture(event.pointerId);
+    const p = point(event); ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x + .1, p.y + .1); ctx.stroke();
+  };
   canvas.onpointermove = event => { if (!drawing) return; const p = point(event); ctx.lineTo(p.x, p.y); ctx.stroke(); };
   canvas.onpointerup = canvas.onpointercancel = () => { drawing = false; };
 }
@@ -843,7 +1009,7 @@ document.addEventListener('click', event => {
   if (!target) return;
   const action = target.dataset.action;
   if (target.tagName === 'A') event.preventDefault();
-  if (['home', 'review', 'settings'].includes(action)) return nav(action);
+  if (['home', 'review', 'workbook', 'settings'].includes(action)) return nav(action);
   if (action === 'settings-back') return nav(state.settingsReturnView);
   if (action === 'voice-preview') return speak('你好！我喜欢学中文。');
   if (action === 'word-detail') {
@@ -858,6 +1024,70 @@ document.addEventListener('click', event => {
   if (action === 'word-listen' && state.wordDetail) return speak(state.wordDetail.text);
   if (action === 'word-replay' && state.wordDetail) {
     wordWriters.forEach(writer => writer.animateCharacter({ onComplete: () => writer.loopCharacterAnimation() }));
+    return;
+  }
+  if (action === 'lesson-workbook') return startWorkbook(Number(target.dataset.lesson));
+  if (action === 'workbook-start') return startWorkbook(state.workbookLesson);
+  if (action === 'workbook-back') { stopListening(); state.workbook = null; return render(); }
+  if (action === 'workbook-replay' && state.workbook) return startWorkbook(state.workbook.lesson, true);
+  if (action === 'workbook-hear' && state.view === 'workbook') return speak(target.dataset.text);
+  if (action === 'workbook-clear-drawing' && workbookCard()?.type === 'write') {
+    document.getElementById('workbook-trace-canvas')?.getContext('2d')?.clearRect(0, 0, 520, 520);
+    state.workbook.drawn = false;
+    document.querySelector('[data-action="workbook-next"]').disabled = true;
+    return;
+  }
+  if (action === 'workbook-choose' && state.view === 'workbook') {
+    const homework = state.workbook;
+    const card = workbookCard();
+    const option = card?.options?.[Number(target.dataset.option)];
+    if (option === undefined || homework.choice !== null || homework.wrong.has(String(option))) return;
+    const selected = String(option);
+    homework.lastChoice = selected;
+    if (selected === String(card.answer ?? card.count)) { homework.choice = selected; chime(); }
+    else homework.wrong.add(selected);
+    render();
+    if (card.type !== 'strokes') speak(card.type === 'cloze' ? card.prefix + selected + card.suffix : selected);
+    return;
+  }
+  if (action === 'workbook-add-chunk' && workbookCard()?.type === 'order' && !state.workbook.checked) {
+    const index = Number(target.dataset.index);
+    const homework = state.workbook;
+    if (!Number.isInteger(index) || index < 0 || index >= workbookCard().answer.length || homework.selected.includes(index)) return;
+    homework.selected.push(index); homework.hint = ''; render(); speak(workbookCard().answer[index]); return;
+  }
+  if (action === 'workbook-remove-chunk' && workbookCard()?.type === 'order' && !state.workbook.checked) {
+    state.workbook.selected = state.workbook.selected.filter(index => index !== Number(target.dataset.index));
+    state.workbook.hint = ''; return render();
+  }
+  if (action === 'workbook-clear-order' && workbookCard()?.type === 'order' && !state.workbook.checked) {
+    state.workbook.selected = []; state.workbook.hint = ''; return render();
+  }
+  if (action === 'workbook-check-order' && workbookCard()?.type === 'order' && !state.workbook.checked) {
+    const homework = state.workbook;
+    const card = workbookCard();
+    if (homework.selected.length !== card.answer.length) return;
+    homework.checked = homework.selected.every((item, index) => item === index);
+    homework.hint = homework.checked ? '✓ Correct sentence!' : '✕ Try a different order. The answer stays hidden.';
+    if (homework.checked) { chime(); speak(card.answer.join('')); }
+    return render();
+  }
+  if (action === 'workbook-speak') return startWorkbookPractice();
+  if (action === 'workbook-done' && ['listening', 'recording'].includes(state.workbook?.practice.status)) {
+    if (finishActiveSpeech()) { state.workbook.practice.status = 'processing'; render(); }
+    return;
+  }
+  if (action === 'workbook-skip' && workbookCard()?.type === 'read') {
+    stopListening(); state.workbook.practice.status = 'skipped';
+    state.workbook.practice.message = 'Read aloud practice skipped. You can return to it later.';
+    return render();
+  }
+  if (action === 'workbook-next' && state.view === 'workbook') {
+    const card = workbookCard();
+    const homework = state.workbook;
+    if (card?.type === 'write' && homework.drawn || card?.type === 'order' && homework.checked ||
+      card?.type === 'read' && ['accepted', 'skipped'].includes(homework.practice.status) ||
+      ['strokes', 'parts', 'spell', 'cloze'].includes(card?.type) && homework.choice !== null) return advanceWorkbook();
     return;
   }
   if (action === 'review-start') return startReview(target.dataset.mode);
@@ -1114,6 +1344,10 @@ document.addEventListener('cancel', event => {
 }, true);
 
 document.addEventListener('change', event => {
+  if (event.target.id === 'workbook-lesson') {
+    state.workbookLesson = Number(event.target.value);
+    render();
+  }
   if (event.target.id === 'homework-lesson') {
     state.homeworkLesson = Number(event.target.value);
     render();

@@ -38,7 +38,7 @@ test('migrates completed lessons and review results from local storage into scop
   assert.equal(progress.lessons[1].percent, 100);
   assert.equal(progress.speechHomework['1:chinese'].bestMatched, 4);
   assert.equal(browser.localStorage.getItem('little-lantern-progress-v2'), null);
-  assert.equal(browser.cookies.size, 2);
+  assert.equal(browser.cookies.size, 3);
   for (const flags of browser.attributes.values()) {
     assert.ok(flags.includes('Path=/zhongwen-kids/'));
     assert.ok(flags.includes('SameSite=Lax'));
@@ -73,7 +73,18 @@ test('each new activity keeps its checkpoint in the lesson cookie', () => {
   }
 });
 
-test('cookie records stay within browser size limits for all lessons and review sets', () => {
+test('workbook homework resumes from the saved card and remembers completion', () => {
+  const browser = fakeBrowser();
+  const progress = readProgress(browser);
+  progress.workbookHomework[2] = { index: 4, completed: false };
+  assert.equal(saveProgress(progress, browser), true);
+  assert.deepEqual(readProgress(browser).workbookHomework[2], { index: 4, completed: false });
+  progress.workbookHomework[2] = { index: 7, completed: true };
+  assert.equal(saveProgress(progress, browser), true);
+  assert.deepEqual(readProgress(browser).workbookHomework[2], { index: 7, completed: true });
+});
+
+test('cookie records stay within browser size limits for lessons, review, and workbook homework', () => {
   const browser = fakeBrowser();
   const progress = readProgress(browser);
   for (let number = 1; number <= 12; number++) {
@@ -82,6 +93,7 @@ test('cookie records stay within browser size limits for all lessons and review 
     for (const mode of ['chinese', 'english']) progress.speechHomework[`${number}:${mode}`] = {
       bestMatched: 4, lastMatched: 4, lastClose: 0, total: 4, completedAt: '2026-10-07T12:00:00.000Z',
     };
+    progress.workbookHomework[number] = { index: 7, completed: true };
   }
   assert.equal(saveProgress(progress, browser), true);
   for (const [name, value] of browser.cookies) assert.ok(`${name}=${value}`.length < 4096, name);

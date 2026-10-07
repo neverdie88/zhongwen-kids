@@ -14,6 +14,7 @@ export const wordMeanings = {
   我们: 'we', 你们: 'you (plural)', 放假: 'to have a holiday', 哪儿: 'where', 动物园: 'zoo',
   动物: 'animal', 假期: 'holiday', 快乐: 'happy',
   星期几: 'what day of the week', 什么: 'what', 知道: 'to know', 怎么: 'how', 问: 'to ask',
+  本子: 'notebook',
 };
 
 export const characterMeanings = {

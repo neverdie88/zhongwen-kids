@@ -1,0 +1,40 @@
+.workbook-intro,.workbook-setup,.workbook-card{max-width:900px;margin-left:auto;margin-right:auto}
+.workbook-intro .review-back{display:block;margin-bottom:12px}
+.workbook-setup,.workbook-card{padding:clamp(20px,4vw,36px)}
+.workbook-setup h2{margin:0 0 18px;font-size:23px}
+.workbook-setup .homework-field{max-width:600px}
+.workbook-source{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:22px 0 16px}
+.workbook-source>*{display:inline-block;padding:10px 14px;border-radius:12px;background:#f3faf6;color:#286a5d;font-weight:800}
+.workbook-card-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:10px;margin:20px 0}
+.workbook-card-list span{display:flex;justify-content:space-between;gap:10px;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:#fff;font-weight:750}
+.workbook-card-list small{white-space:nowrap;color:var(--muted);font-weight:700}
+.workbook-setup .homework-note{max-width:690px;line-height:1.6}
+.workbook-card h2{font-size:clamp(24px,4vw,34px);margin:18px 0 12px;letter-spacing:-.03em}
+.workbook-card>p{color:var(--muted);line-height:1.6}
+.workbook-card .card-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.workbook-card .trace-wrap{margin-left:0}
+.workbook-big-char{font-size:clamp(90px,14vw,150px);line-height:1.2;margin:12px 0;color:var(--ink)}
+.workbook-parts{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:22px 0;font-size:clamp(35px,7vw,65px)}
+.workbook-parts span{display:grid;place-items:center;min-width:1.5em;min-height:1.5em;border:2px solid #e6ded0;border-radius:15px;background:#fffaf2}
+.workbook-parts b{font-family:'DM Sans',sans-serif;color:var(--muted);font-size:.6em}
+.workbook-clue{font-size:clamp(21px,3.5vw,29px);font-weight:750;color:var(--ink)!important}
+.workbook-sentence{font-size:clamp(29px,5vw,46px);line-height:1.7;overflow-wrap:anywhere;margin:15px 0}
+.workbook-blank{display:inline-grid;place-items:center;min-width:1.6em;padding:0 .15em;border-bottom:4px solid var(--coral);color:var(--coral-dark)}
+.workbook-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin:24px 0;max-width:720px}
+.workbook-options .option{position:relative;min-height:72px;text-align:center;font-weight:800;font-size:clamp(24px,4vw,32px);overflow-wrap:anywhere}
+.workbook-options .option-hanzi{font-size:clamp(27px,4.5vw,37px)}
+.workbook-options .choice-mark{position:absolute;right:9px;top:5px;font-family:'DM Sans',sans-serif;font-size:20px}
+.workbook-answer{border:2px solid #dceee5;background:#f6fcf8;border-radius:17px;padding:18px 22px;max-width:720px;margin:20px 0;line-height:1.5}
+.workbook-answer strong{font-size:27px}
+.workbook-answer p{margin:7px 0 0;color:#3f5d56;font-size:18px}
+.workbook-answer .btn{margin-top:12px}
+.workbook-attempt{border:2px solid #f3ddd1;background:#fffaf5;border-radius:17px;padding:15px 20px;max-width:720px;margin:14px 0;line-height:1.5}
+.workbook-attempt p{margin:6px 0 0;color:#755748}
+.workbook-answer-pinyin{font-size:clamp(20px,3vw,27px);font-weight:750;color:var(--coral-dark);line-height:1.5}
+.workbook-answer-chinese{font-size:clamp(29px,4vw,42px);line-height:1.5;overflow-wrap:anywhere}
+.workbook-builder{max-width:760px}
+.workbook-read-phrase{justify-content:flex-start}
+.workbook-done{text-align:center}
+.workbook-done p{max-width:550px;margin:12px auto}
+.workbook-done .card-actions{justify-content:center}
+@media(max-width:470px){.workbook-options{grid-template-columns:repeat(2,minmax(0,1fr))}.workbook-card-list{grid-template-columns:1fr}.workbook-card .trace-wrap{margin-left:auto}.workbook-parts{gap:6px}.workbook-parts span{min-width:1.3em}}

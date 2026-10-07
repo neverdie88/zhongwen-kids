@@ -1,6 +1,6 @@
 # Little Lantern
 
-A Chinese learning app for a child aged roughly 6–9. The guided course follows the supplied **《中文》第二册（修订版）** textbook. It includes 12 short lessons with speaking, translation choices in both directions, Chinese and English sentence building, audio sentence building, listening word choices, picture matching, missing words, dialogue replies, tone listening, character tracing, and two speaking review sets. The workbook PDFs are kept only in the local project folder and are not published with the app.
+A Chinese learning app for a child aged roughly 6–9. The guided course follows the supplied **《中文》第二册（修订版）** textbook. It includes 12 short lessons with speaking, translation choices in both directions, Chinese and English sentence building, audio sentence building, listening word choices, picture matching, missing words, dialogue replies, tone listening, character tracing, and two speaking review sets. The **Homework** tab adds seven short activities for each lesson, adapted from its Book 2 workbook. The workbook PDFs are kept only in the local project folder and are not published with the app.
 
 ## Start
 
@@ -11,7 +11,7 @@ cd /Users/ductnguy/Documents/Playground/zhongwen-kids
 npm start
 ```
 
-Open [http://127.0.0.1:4178](http://127.0.0.1:4178). Keep that terminal open while using the app. It listens only on this computer. Audio playback uses the browser's Chinese voices. The **⚙ Settings** button chooses one recognizer for both Learn and Review, plus a Chinese playback voice. Voice and recognizer settings stay in browser local storage. Lesson and Review progress is saved in first-party cookies for one year; existing local-storage progress is migrated automatically. Each lesson card shows a progress bar, and an unfinished lesson resumes from its last completed activity. Clearing site cookies clears saved progress.
+Open [http://127.0.0.1:4178](http://127.0.0.1:4178). Keep that terminal open while using the app. It listens only on this computer. Audio playback uses the browser's Chinese voices. The **⚙ Settings** button chooses one recognizer for Learn, Review, and Homework, plus a Chinese playback voice. Voice and recognizer settings stay in browser local storage. Lesson, Review, and Homework progress is saved in first-party cookies for one year; existing local-storage progress is migrated automatically. Each lesson and homework card shows a progress bar, and unfinished work resumes from its last completed activity. Clearing site cookies clears saved progress.
 
 For Chinese playback, choose **Standard voice** or **Girl voice** and tap **Preview voice** to hear the selection. Girl voice prefers Tingting or another available Mandarin girl voice, with a brighter pitch fallback when the browser has only one Chinese voice. This setting applies to phrase playback, word pronunciation, Learn, and Review. The exact sound depends on the browser's installed voices.
 
@@ -25,7 +25,14 @@ Wrong translation, sentence-building, and listening answers stay on the same que
 
 Speaking cards display pinyin directly above each Chinese word. Tapping a word immediately plays its pronunciation and opens its English meaning, pinyin, and stroke order; the card also has a replay button. The same word cards appear in Review when Chinese is visible. Recognition feedback shows large pinyin on one line above large Chinese text. Word meanings and stroke data for all Book 2 speaking phrases are bundled locally, so the word panel does not call a translation service.
 
-The **Review** tab has two speaking sets for any Book 2 lesson: **Set 1** shows the Chinese sentence to read aloud; **Set 2** shows the English meaning and asks for the corresponding Chinese sentence. Each set checks all phrases in the chosen lesson. Settings offers three recognition choices for both Learn and Review:
+The **Homework** tab follows the odd lessons in Workbook A and the even lessons in Workbook B. Every lesson has seven cards drawn from its five workbook days: write a character, count strokes, combine character parts, choose a written word, fill a sentence blank, put words in order, and read aloud. The cards are short interactive adaptations, not digital copies of every exercise. Each card names the relevant printed workbook page. Choices and sentence order require a correct answer to continue; wrong answers can be retried without revealing the solution. Writing unlocks after a stroke is drawn, and the reading card uses the selected recognizer with a Skip option. Writing is not machine graded and speech recognition checks words rather than pronunciation or tones. Homework position and completion are stored in a separate first-party cookie.
+
+| Lesson | Workbook | Printed pages |
+| --- | --- | --- |
+| 1, 3, 5, 7, 9, 11 | A | 1–13, 14–27, 28–42, 43–55, 56–69, 70–85 |
+| 2, 4, 6, 8, 10, 12 | B | 1–15, 16–30, 31–47, 48–61, 62–76, 77–90 |
+
+The **Review** tab has two speaking sets for any Book 2 lesson: **Set 1** shows the Chinese sentence to read aloud; **Set 2** shows the English meaning and asks for the corresponding Chinese sentence. Each set checks all phrases in the chosen lesson. Settings offers three recognition choices for Learn, Review, and Homework:
 
 - **Whisper Small · in this browser (default):** runs a quantized multilingual Whisper Small model with Transformers.js and ONNX Runtime Web/WASM. The model is served from this computer and loaded into the browser on first use. The recording stays in the browser. The model is large and CPU transcription can take time.
 - **sherpa-onnx · in this browser:** runs the Chinese/English streaming Zipformer model from the sherpa-onnx WASM release. Its model is served from this computer and loaded into the browser on first use. The recording stays in the browser.
