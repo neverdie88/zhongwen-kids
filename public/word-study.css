@@ -1,0 +1,128 @@
+.speaking-phrase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: center;
+  gap: 8px 5px;
+  max-width: 690px;
+  margin: 22px auto 7px;
+}
+
+.speaking-word {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+  min-height: 84px;
+  padding: 7px 9px 6px;
+  border: 1px solid #d6e8e1;
+  border-bottom: 3px solid #98c9b7;
+  border-radius: 13px;
+  background: #f4fbf7;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: transform .16s, background .16s, border-color .16s;
+}
+
+.speaking-word:hover {
+  transform: translateY(-2px);
+  border-color: var(--mint-dark);
+  background: #e5f8ee;
+}
+
+.speaking-pinyin {
+  color: var(--coral-dark);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.speaking-hanzi {
+  font-size: clamp(29px, 4vw, 41px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.speaking-punctuation {
+  align-self: end;
+  padding-bottom: 5px;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.word-tap-hint {
+  margin: 8px 0 0;
+  color: var(--mint-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.homework-card .speaking-phrase,
+.review-card .speaking-phrase { margin-top: 16px; }
+.homework-answer .speaking-phrase { margin-top: 0; margin-bottom: 12px; }
+.homework-answer .speaking-word { min-height: 70px; }
+.homework-answer .speaking-hanzi { font-size: 30px; }
+
+.word-dialog {
+  width: min(570px, calc(100vw - 24px));
+  max-height: min(90dvh, 820px);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgba(23, 33, 45, .28);
+  overflow: auto;
+}
+
+.word-dialog::backdrop { background: rgba(28, 41, 55, .58); }
+.word-dialog h2 { margin: 5px 42px 16px 0; font-size: 25px; letter-spacing: -.035em; }
+.word-close {
+  position: absolute;
+  right: 17px;
+  top: 16px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.word-hero {
+  padding: 20px;
+  border: 1px solid #d6e8e1;
+  border-radius: 17px;
+  background: #eff9f3;
+  text-align: center;
+}
+
+.word-hero-hanzi { font-size: clamp(46px, 11vw, 68px); line-height: 1.25; }
+.word-hero-pinyin { margin-top: 5px; color: var(--coral-dark); font-size: 20px; font-weight: 800; }
+.word-meaning { display: grid; gap: 5px; margin-top: 16px; padding: 13px 16px; border: 1px solid var(--line); border-radius: 14px; }
+.word-meaning span { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.word-meaning strong { font-size: 18px; }
+.word-actions { margin: 16px 0 18px; }
+.word-writing { padding: 17px; border: 1px solid #e3dfd7; border-radius: 16px; background: #faf8f3; }
+.word-writing-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+.word-writing h3 { margin: 0; font-size: 18px; }
+.word-writing p { margin: 4px 0 12px; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.word-writing-head .btn { flex: none; }
+.word-stroke-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(123px, 1fr)); gap: 11px; }
+.word-stroke-card { display: grid; justify-items: center; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 13px; background: white; }
+.word-stroke-canvas { display: grid; place-items: center; width: 112px; height: 112px; border: 1px solid #eee8df; border-radius: 10px; background: linear-gradient(transparent calc(50% - 1px), #f2ebe3 50%, transparent calc(50% + 1px)), linear-gradient(90deg, transparent calc(50% - 1px), #f2ebe3 50%, transparent calc(50% + 1px)), #fff; }
+.word-stroke-canvas.stroke-unavailable { color: var(--muted); font-size: 55px; }
+.word-stroke-card strong { font-size: 18px; }
+
+@media (max-width: 470px) {
+  .speaking-word { min-height: 75px; padding: 6px 7px; }
+  .speaking-pinyin { font-size: 12px; }
+  .speaking-hanzi { font-size: 31px; }
+  .word-dialog { padding: 19px 15px; }
+  .word-writing { padding: 12px; }
+  .word-writing-head { flex-wrap: wrap; }
+  .word-writing-head .btn { width: auto; }
+}

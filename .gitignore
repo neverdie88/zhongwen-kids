@@ -1,0 +1,15 @@
+.env
+.env.local
+.DS_Store
+node_modules/
+dist/
+.vercel/
+source/*.pdf
+workbooks/*.pdf
+public/models/whisper-small/onnx/*.onnx
+public/vendor/sherpa/*.data
+kaiti-preview.jpg
+speech-check-updated.jpg
+speech-homework-preview.jpg
+Prompt.md
+PLANS.md

@@ -1,0 +1,18 @@
+{
+  "name": "zhongwen-kids",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:speech": "esbuild public/workers/whisper-worker.mjs --bundle --format=esm --platform=browser --outfile=public/workers/whisper-worker.bundle.mjs",
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check local-asr.mjs && node --check public/app.js && node --check public/exercise-data.mjs && node --check public/transcript-pinyin.mjs && node --check public/word-study.mjs && node --check public/voice-style.mjs && node --check public/audio-prep.mjs && node --check public/browser-asr.mjs && node --check public/workers/sherpa-worker.js && node --check public/workers/whisper-worker.mjs && node --check public/workers/whisper-worker.bundle.mjs && node --test test/*.test.mjs && python3 scripts/validate_curriculum.py"
+  },
+  "engines": {
+    "node": ">=20.12"
+  },
+  "devDependencies": {
+    "@huggingface/transformers": "^3.8.1",
+    "esbuild": "^0.25.12"
+  }
+}

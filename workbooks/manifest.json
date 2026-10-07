@@ -1,0 +1,272 @@
+{
+  "sources": [
+    "Huaqiao University Chinese Language Education Research Institute",
+    "Chinese Overseas Education Network"
+  ],
+  "files": [
+    {
+      "volume": 1,
+      "workbook": "A",
+      "file": "zhongwen-01-A.pdf",
+      "verified_title": "第一册练习册(A)",
+      "pages": 88,
+      "bytes": 1806028,
+      "sha256": "c3fe506b9f28fecbb20e0849ebeaa88b25644751d57babd9b5002e62f7563e7d",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uo7VU2M7l8MRNaMn46VnzARozlDUzASRLllDLzAkM8CinRv0gihFp2hmCIa0MYy4n1hRn1yPnzQVL4nkL7UZLmLbLNM7Uz7inN-8Uz7PLzQFLm-soRGanNWFLl-ZnlMRgjfNQmOeLtWNMmNZCDUxMmCaQS88ozAAgzNaLILxLtliCt-8oRTtLmAmgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 1,
+      "workbook": "B",
+      "file": "zhongwen-01-B.pdf",
+      "verified_title": "第一册练习册(B)",
+      "pages": 88,
+      "bytes": 1835291,
+      "sha256": "660331371808151a579ce34970c4573f68042ff0331af1374c119a8dabe63504",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uL7CUDUm-bU4vYLnN-4ozviMzviollSaL4QVo7QRn7W7MmU0gihFp2hmCIa0nSh7LkybnkhfLlrRnRMVM8UiLR67M4-anNr2L4vbLz7bolWFLmWkU8LaUznFLlLaLzVkgjfNQmOeMIliCmntQR9xM2MTQS88Q2C8gI-ZL47xQzf1QRLaQmQAL2QNgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 2,
+      "workbook": "A",
+      "file": "zhongwen-02-A.pdf",
+      "verified_title": "第二册练习册(A)",
+      "pages": 90,
+      "bytes": 2066208,
+      "sha256": "b135e53bb87b1298ae34d118618d8ce7676c7e224b4c6c5bbcff725797873692",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLRfURU498M8CDMnlnfM4UinmNYL4lS8U4CbMRNiLNnRL470gihFp2hmCIa0LkyYLkhVoShVL7LPLz9PMRAknlC4M4LbMmMRLNCsnmAkM8MFLNQVU462U4WFLlCZM4-agjfNQmOeMRT1Cz6mCtCxLtLYLk88CI-sgIWtMDlxM27YCI-bLRNaoRA1gjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 2,
+      "workbook": "B",
+      "file": "zhongwen-02-B.pdf",
+      "verified_title": "第二册练习册(B)",
+      "pages": 96,
+      "bytes": 1942033,
+      "sha256": "348d905413ad3df0a4aa00d909f28d68a58564185d84b8aaa4cfe34843217030",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uL7UUZL7n7L4lbMnzNZLzGPLNLaL4GSsM7rRLRlYM4-8o770gihFp2hmCIa0LkyZoSyiU1yanmn2MRCbnzUDUzN4UmrfnznfMmAfLRGZL7QFnmlsUlCDUNnFLlnfLm7PgjfNQmOeLtLYMzCbLRNxM4MmQ188MtCYgzA1CDCxMR9bQRvDLRTTCtL8gjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 3,
+      "workbook": "A",
+      "file": "zhongwen-03-A.pdf",
+      "verified_title": "第三册练习册(A)",
+      "pages": 104,
+      "bytes": 1905001,
+      "sha256": "7f57eae4f34ac445dd588323f3de353cc4c12fd1fb3ab7de0773ae66cf1328de",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=unmvU8M4nfL8UsnnmLYL4Nio7MVLz9SYnRWkLlLZMz7PM7l0gihFp2hmCIa0U1yaLSyYLYyDozLDU4UZnRL4LR-snlV2nzrRo7Q7LN7YLmrFUlCsoRW7oRrFLlUPLzCbgjfNQmOeLD7PLtWtoRGxQR74Lk88M4rTgIWmL27xo2C8QzftM2WmQm-igjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 3,
+      "workbook": "B",
+      "file": "zhongwen-03-B.pdf",
+      "verified_title": "第三册练习册(B)",
+      "pages": 102,
+      "bytes": 1839765,
+      "sha256": "b61d62ff0c5d19c9005ea0a1437b6cb408417b7fe4ebd776277a92c06d9345cc",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLR6U7MmvaMmUDonlrRU4l8LmnVnNlSbM8L4MR7iL498Lzl0gihFp2hmCIa0n1yinSyiL1hkoRlZnzUYnz6kLm-4LRUbLmnfUlVRMmrVnmQFolUinR-aL7rFLlLPLmNigjfNQmOeCD7YMRf1M4LxMz9DM188LDVAgzTTM2LxLzLZMzM1CmviQmCPgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 4,
+      "workbook": "A",
+      "file": "zhongwen-04-A.pdf",
+      "verified_title": "第四册练习册(A)",
+      "pages": 108,
+      "bytes": 1930985,
+      "sha256": "88ae69459b207aaa4ac5aca8e2e76dc8d745ca360817559c3efcdfac3bdd82fe",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uUlUUYUNWknlQ7Un8n7M8Q2U8CanmfS2UzTVM8Q2nmnVM7-0gihFp2hmCIa0oSy4oSyZnSyDnNLDLzC8LmGYol7PLm6fMzAknmfkM7MRn7nFUlM2nzrfUmAFLlUsMNlbgjfNQmOeLRMNC4fmMmLxL4v4oS88oICYgz9DLz-xLmQtCzQNoI-iMmnTgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 4,
+      "workbook": "B",
+      "file": "zhongwen-04-B.pdf",
+      "verified_title": "第四册练习册(B)",
+      "pages": 108,
+      "bytes": 1830121,
+      "sha256": "ae6ef0c0f779f80933993102d5ffeaca57b115b4d9158cc1af624a1cdf18c7ef",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uol7Uioznkoz7bUnN7ZMznRMll8nRUSsLm7PMz7ioR7iMzL0gihFp2hmCIa0MYysL1h2n1h7L8L4nznVL4-8nlrkM4UDnz6RMlLYL4U8UzMFL4GDL7UsMRMFLlWVU8lbgjfNQmOeLR6mCzAAQtlxL2C4LS88CzUigIVtQRCxL4-sQR7aCIr1oRvDgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 5,
+      "workbook": "A",
+      "file": "zhongwen-05-A.pdf",
+      "verified_title": "第五册练习册(A)",
+      "pages": 102,
+      "bytes": 1935532,
+      "sha256": "b5511046e20bd62fd2d3b9ceee79e7cd38d816c14a654ede13742af79a3f3af7",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uU4CUbLlCiUN7DMn7VkM4T7M8-8L87SsUzUYMzl8oRGbnRC0gihFp2hmCIa0MSyiL1y8okh7Lm7YMRNan7-ZU8QkMmL8LNLYU87Yn7M7Um6FMzf7MR6fnmAFLlUZo7VRgjfNQmOeQt-ZLz6mC4NxQmWTQ188CmQmgI-8QzCxCmQTMIQAMDrmLD74gjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 5,
+      "workbook": "B",
+      "file": "zhongwen-05-B.pdf",
+      "verified_title": "第五册练习册(B)",
+      "pages": 107,
+      "bytes": 1978063,
+      "sha256": "98e1fe4c59f7cd945356a001ed57282c79849a804d369bbe086799280a3d94a2",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uMmfU7UNlbMlLbMnl7iUmVRnRGPU4vSPn77bLzWVM4LaozN0gihFp2hmCIa0n1ybnkhkLSysLmnkMmGiLRWfnzr7LRGZLRC8UNUanzV2LmVFL4C8UzQ7oRAFLllYnlM2gjfNQmOeQmntL2nTLRNxQ2L8QS88CD-DgzTNC4GxQRNYMR7ZLILPCmV1gjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 6,
+      "workbook": "A",
+      "file": "zhongwen-06-A.pdf",
+      "verified_title": "第六册练习册(A)",
+      "pages": 106,
+      "bytes": 1948976,
+      "sha256": "f6ae2db3f0df57cda74f1237f8531752570b2250d91644ef4494956394d53b7c",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=unmnU7L4LZLNUPLnNCZUzUDnzNDL7VSVMllanzlZMRUYUm-0gihFp2hmCIa0M1yPn1h7Mky8MRGsnzG8U8CDMN74Um9YMzAkUlCiLNrRU8QFMzLiLlU8MmAFLlnknRLagjfNQmOeo2lYLILZLRUxMz74Lk88Mm7igzNaLzlxQICYLzUZCtUaM2-4gjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 6,
+      "workbook": "B",
+      "file": "zhongwen-06-B.pdf",
+      "verified_title": "第六册练习册(B)",
+      "pages": 110,
+      "bytes": 1976264,
+      "sha256": "72b09d49864b8c444de7d7e799f8b8ad4342f95e586a82057796ff8262ea95cf",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=unNLUPU87PnzCaUnmr2LmvZMllsoRCSiLRLbLRvDoRNPLRG0gihFp2hmCIa0MSybM1y8okhkMNr7Um7aMm-DoRvinNVRnR7iLRrRL4MfnRAFnNrVUNLPnNQFLllYM8LZgjfNQmOeQm7iCzftMRCxMDWtL188QmWtgzNaoR9xo2MNQ2-8C4l8QmGsgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 7,
+      "workbook": "A",
+      "file": "zhongwen-07-A.pdf",
+      "verified_title": "第七册练习册(A)",
+      "pages": 106,
+      "bytes": 2177706,
+      "sha256": "a99803da4b26b6a96d9f75f46ed0420543c4fd584a8ebeb5a4c8c23d77295ede",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uozGUZnN7sM4lZLnRCsUz-aLzlbnRVS7L7WRolWVUlLioRv0gihFp2hmCIa0UYh2nkyDMYh7Mm6VLNQkMzVknmVVMlWkUNLaM4NZMz-aLzrFU8L4nzn2oRQFLm74UlVfgjfNQmOeCmrmLmviCIlxoRfTMk88LmfmgzTtC4LxQm7PC4M1QRCaLD7bgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 7,
+      "workbook": "B",
+      "file": "zhongwen-07-B.pdf",
+      "verified_title": "第七册练习册(B)",
+      "pages": 104,
+      "bytes": 2148301,
+      "sha256": "6b3998637a61ed8be92831469c0908e972ddf732ba0803998f23ceab2c4c246e",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uoRNUsUmfkU874UnzC4MmTVMzQ2M8WS7M7lsnRNsMl-ZLRN0gihFp2hmCIa0L1hfMYy4USysnl-8LmARnmCDLmvsUlLDnNMfU498nzLYLmnFozUYnRGYnmWFLmfRM8M7gjfNQmOeCDCaCtLaMmCxLmM1oS88Mm7DgzN4M4NxMRrTMtLaMtUZQzLigjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 8,
+      "workbook": "A",
+      "file": "zhongwen-08-A.pdf",
+      "verified_title": "第八册练习册(A)",
+      "pages": 106,
+      "bytes": 2125791,
+      "sha256": "5b6d6fb8091695dcbb74cdf53305adb7076ec8c632a866dbbd01a08c4b1ec0de",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLzTU2U4fkLmQVUnz-iMNUZLzQVU4CSsMNlin7Q2Mz62LR70gihFp2hmCIa0U1ybU1yYM1h7L7VfUzQ7L8WVUlUinNLDU4L4L8CinzfkMzVFLzrRLNl4nNMFLmGDnNn2gjfNQmOeQt7YQRN8QmUxQml4CY88LzW1gIWmMz9xL4vZo2-sQz-4Lm9PgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 8,
+      "workbook": "B",
+      "file": "zhongwen-08-B.pdf",
+      "verified_title": "第八册练习册(B)",
+      "pages": 102,
+      "bytes": 1909338,
+      "sha256": "7cde8985bd952923a2aa4077677ba37188ba15d5085fd655cab2af9fd681fad8",
+      "index_url": "https://www.hwjyw.com/hwjc.html",
+      "pdf_url": "https://oss.hwjyw.com/uploads/jiaocaifile/20230129/eb9ae3285b27ed3bf7e73b10b25d0a6f.pdf"
+    },
+    {
+      "volume": 9,
+      "workbook": "A",
+      "file": "zhongwen-09-A.pdf",
+      "verified_title": "第九册练习册(A)",
+      "pages": 106,
+      "bytes": 2152345,
+      "sha256": "8555e9a0b90481f6dccec1943c089222df9398e34a15ff78f48854b26c1b16c9",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLNLUbL7-PoRCaLnzCbLlQVnNUsLzvSiU8QkMN7ZUN-aM4G0gihFp2hmCIa0oSyPL1hkLSysL4LbnmCsLzMRLNMRLmvZUz7PLmlaLz9sM4rFL7CZL8lZMRfFLmf7M4NbgjfNQmOeLDLDMIVtMzGxLmM1CY88Qm9sgIWmQRLxCI7YozCbL4M1oz9YgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 9,
+      "workbook": "B",
+      "file": "zhongwen-09-B.pdf",
+      "verified_title": "第九册练习册(B)",
+      "pages": 106,
+      "bytes": 2136531,
+      "sha256": "04a83dae07698576b060dfd5b2f1050d2a908832b5308fbc0c511464880059e3",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLm-UsnmNYMmQkLn4NZLRT7nzCPMm6SkL7nfozlDL7Q7Mz70gihFp2hmCIa0M1ybMkyaUShVnllin7C4L4nfLzlsL77DLzrVnzG8LmlsMlWFLl7YLzlYM7WFLmGbolU4gjfNQmOeLt-ZM47ZC47xL2-DLS88CzvYgIV1C4CxCI-8C498L4QTCm7PgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 10,
+      "workbook": "A",
+      "file": "zhongwen-10-A.pdf",
+      "verified_title": "第十册练习册(A)",
+      "pages": 108,
+      "bytes": 2346671,
+      "sha256": "18999d2be5d1b712e6a06d4ebdd29c5d006ac2e4b0bd60dddb6d0fac20053742",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uUzLUbL4VRL8lZLn878UN7DoRC4UzlSiM8VfU8U4n7LsM7C0gihFp2hmCIa0LYhRoSyZLSysMzMfnNVknllbUzrVMzvsLllbU8-DM4LsMNMFnRLPUm78o7QFLmMRnlV2gjfNQmOeoIVTLRLZCmNxCmVACY88LmntgIW1QtCxCzW1LmC4QRAALmCsgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 10,
+      "workbook": "B",
+      "file": "zhongwen-10-B.pdf",
+      "verified_title": "第十册练习册(B)",
+      "pages": 104,
+      "bytes": 2189537,
+      "sha256": "375765b4ef23c984062be0ff03f6833abe880fe430e8482b9ce47fb10b95a60c",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uM8nU7M7QfnmlannzffLlLiMNWRnl-SYL8VRUN7PUln7U8l0gihFp2hmCIa0M1yYUShRMSyYMRlZU4vsnRCPoRA7oz6kMN7sMmN8UmLsMznFMlMVLzGbMmnFLm7Do7lPgjfNQmOeCmUYM4LPCtUxM2rmM188oz7sgzNDLt7xLD-DoRWALR-sMt-igjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 11,
+      "workbook": "A",
+      "file": "zhongwen-11-A.pdf",
+      "verified_title": "第十一册练习册(A)",
+      "pages": 116,
+      "bytes": 2267441,
+      "sha256": "bdc28f1f29a5b65ae38605998bb651adbfe6c685a71bd8f7777f46f103b3f71e",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uM4WURMlWRLNlbMnR9DLR-DMR78nNCSsLzfkLmf7L8UaUz90gihFp2hmCIa0nSyYoSyYM1ybMmG8nlM2UmT2oRC8MlWfUmlDLRMVozCbnznFnRGbMzVVUznFLm-bozLPgjfNQmOeCIMTMmntoI-xQ2LYok88CmAAgz9aMmUxC4fTMI-boIC4LtQTgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 11,
+      "workbook": "B",
+      "file": "zhongwen-11-B.pdf",
+      "verified_title": "第十一册练习册(B)",
+      "pages": 111,
+      "bytes": 2238279,
+      "sha256": "70575421e28d209a8997010aa1ca04e088b719dcf642f797e8ca97ce0b26c4ee",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uoR7UbM8W7MRL4MnzMkUm-ZoR7YLmQSVM4lYLmn2nlUPL870gihFp2hmCIa0okyDU1hfMYh7MmLsLzrfo7VkL4UPU4C4U4-8nln7LmNYnzAFMRvsMmWVnRrFLm-YM4UsgjfNQmOeM2LZoRlDQRlxLDMmQS88oIQtgIWAMtCxQz6NCzlDQ2QtoIlYgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    },
+    {
+      "volume": 12,
+      "workbook": "A",
+      "file": "zhongwen-12-A.pdf",
+      "verified_title": "第十二册练习册(A)",
+      "pages": 118,
+      "bytes": 2260096,
+      "sha256": "276954989f0011ec243a648d87d22df473329bc2696720220952b30291ace119",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1113.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uMNWU7oz94UmAVLn4vsUmnfLN-DnNUSDM7r2nRGDozUsMNL0gihFp2hmCIa0LYhRokybMYhVL4-DM4vPo7CiMm-sM8rVM47sL4lbL8l4MRTFM7rfMz-8MNVFLm-sU49agjfNQmOeLIC4C4CaC4LxCmLiC188CtUbgI-sLz-xQRNsLtCsC4GsCzlYgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PLYbw62z8c&oid=1484476379&tid=1015&nid=1113&e=.pdf"
+    },
+    {
+      "volume": 12,
+      "workbook": "B",
+      "file": "zhongwen-12-B.pdf",
+      "verified_title": "第十二册练习册(B)",
+      "pages": 115,
+      "bytes": 2185412,
+      "sha256": "52986210993d64ddf650d979f6197d7ab44c115c7e58e8bd499f685052229f49",
+      "index_url": "https://hwjyyjy.hqu.edu.cn/info/1015/1112.htm",
+      "pdf_url": "https://hwjyyjy.hqu.edu.cn/virtual_attach_file.vsb?afc=uLRCUbL7U4n7W2UnzvDMRNaL4CboR-SiM7C8o7l8Mz98M8-0gihFp2hmCIa0UYysn1yYM1h7LzVRUNLaMmMVMRvPMzVVUll4UmLanlQfnRrFLlUDLmC8UzQFLm7io7L8gjfNQmOeCt7bLIr1oz9xQm9iok88oz-ZgzN4oR-xQzfAoIrNM4VTCt-DgjfNQmOeqd6/_IbT6YhXptQ0g47aLzl0Lz7PL1bw62z8c&oid=1484476379&tid=1015&nid=1112&e=.pdf"
+    }
+  ]
+}

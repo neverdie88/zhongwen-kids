@@ -1,0 +1,29 @@
+@font-face {
+  font-family: "Little Lantern KaiTi";
+  src: url("fonts/lxgw-zhenkai-gb-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+3000-303F, U+3400-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+
+:root {
+  font-family: "Little Lantern KaiTi", "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.hanzi,
+.brand-mark {
+  font-family: "Little Lantern KaiTi", "Kaiti SC", "STKaiti", "KaiTi", "Songti SC", serif;
+  font-synthesis-weight: none;
+}
+
+.big-chinese {
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.lesson-meta h1,
+.chunk.hanzi,
+.trace-guide {
+  font-weight: 400;
+}

@@ -1,0 +1,3 @@
+fcfc6100dc7339e7507e10f8b274350be7c4f8d8b575f0293f94cc0e156d6d24  public/models/whisper-small/onnx/decoder_model_merged_quantized.onnx
+969f5ac12974340386bf7a02ea6626003e5e2dee396ffc6ab0eec282bf55ba06  public/models/whisper-small/onnx/encoder_model_quantized.onnx
+90b04a9403e4bae9b23a0a3c00dbac8603e183361105a52cc03f053217490863  public/vendor/sherpa/sherpa-onnx-wasm-main-asr.data

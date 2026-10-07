@@ -1,0 +1,61 @@
+.translation-prompt {
+  max-width: 700px;
+  margin: 23px auto 5px;
+  font-size: clamp(25px, 4vw, 37px);
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.option-hanzi {
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 400;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.translation-answer {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  width: min(650px, 100%);
+  margin-top: 9px;
+}
+
+.translation-answer .speaking-phrase { margin-top: 6px; }
+.translation-answer strong { font-size: 17px; line-height: 1.4; }
+
+.speaker-symbol {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin-top: 20px;
+  border-radius: 28px;
+  background: #eff8f5;
+  font-size: 45px;
+}
+
+.listening-options {
+  width: min(760px, 100%);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.listening-answer {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  margin-top: 12px;
+  line-height: 1.3;
+}
+
+.listening-answer .pinyin { font-size: 20px; }
+.listening-answer .hanzi { font-size: 39px; font-weight: 400; }
+.listening-answer > span:last-child { color: var(--muted); font-size: 15px; }
+
+@media (max-width: 600px) {
+  .listening-options { grid-template-columns: 1fr; }
+  .listening-options .option { min-height: 57px; }
+  .translation-answer .speaking-word { min-height: 71px; }
+  .exercise-card .builder-answer, .exercise-card .builder-bank { gap: 5px; }
+  .exercise-card .chunk { padding: 9px 11px; font-size: 19px; }
+}

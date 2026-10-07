@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8ed">
+  <meta name="description" content="A playful Chinese learning path for Zhongwen Book 2.">
+  <title>Little Lantern · Chinese Book 2</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="chinese-font.css">
+  <link rel="stylesheet" href="speech-homework.css">
+  <link rel="stylesheet" href="word-study.css">
+  <link rel="stylesheet" href="exercise-types.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="site-header">
+      <a class="brand" href="./" data-action="home" aria-label="Little Lantern home">
+        <span class="brand-mark" aria-hidden="true">灯</span>
+        <span><strong>Little Lantern</strong><small>中文 · Book 2</small></span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        <button type="button" data-action="home" data-nav="home">Learn</button>
+        <button type="button" data-action="review" data-nav="review">Review</button>
+        <button type="button" class="settings-button" data-action="settings" data-nav="settings" aria-label="Speech settings"><span aria-hidden="true">⚙</span><span class="settings-label">Settings</span></button>
+      </nav>
+    </header>
+    <main id="app" tabindex="-1"><div class="loading-card">Lighting the lantern…</div></main>
+    <footer class="site-footer">Made for short lessons together · Progress stays on this device</footer>
+  </div>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script defer src="vendor/hanzi-writer.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+{
+  "title": "中文 · 第二册",
+  "edition": "修订版 · 2006",
+  "source": "chinese book 2.pdf",
+  "units": [
+    {
+      "number": 1,
+      "title": "School & Friends"
+    },
+    {
+      "number": 2,
+      "title": "Good Manners & Everyday Life"
+    },
+    {
+      "number": 3,
+      "title": "Hands, Moon & Questions"
+    },
+    {
+      "number": 4,
+      "title": "Rain, Rivers & Holidays"
+    }
+  ],
+  "lessons": [
+    {
+      "number": 1,
+      "unit": 1,
+      "title": "在中文学校",
+      "englishTitle": "At a Chinese School",
+      "page": 1,
+      "readingTitle": "中文学校真是好",
+      "character": "在",
+      "text": "我在中文学校学习。老师教我们说汉语，写汉字，读儿歌，画画儿。我喜欢学中文。",
+      "phrases": [
+        {
+          "chinese": "我在中文学校学习。",
+          "english": "I study at Chinese school.",
+          "pinyin": "wǒ zài zhōng wén xué xiào xué xí。"
+        },
+        {
+          "chinese": "说汉语",
+          "english": "speak Chinese",
+          "pinyin": "shuō hàn yǔ"
+        },
+        {
+          "chinese": "写汉字",
+          "english": "write Chinese characters",
+          "pinyin": "xiě hàn zì"
+        },
+        {
+          "chinese": "我喜欢学中文。",
+          "english": "I like learning Chinese.",
+          "pinyin": "wǒ xǐ huan xué zhōng wén。"
+        }
+      ],
+      "build": [
+        "我",
+        "在",
+        "中文学校",
+        "学习",
+        "。"
+      ]
+    },
+    {
+      "number": 2,
+      "unit": 1,
+      "title": "教室里",
+      "englishTitle": "In the Classroom",
+      "page": 8,
+      "readingTitle": "我长大了",
+      "character": "书",
+      "text": "方方：这是你的书吗？冬冬：这不是我的书。这是云云的书。方方：那是她的笔和本子吗？冬冬：是她的。方方：你在家里讲中文吗？冬冬：我在家里讲中文。爸爸、妈妈喜欢和我讲中文。",
+      "phrases": [
+        {
+          "chinese": "这是你的书吗？",
+          "english": "Is this your book?",
+          "pinyin": "zhè shì nǐ de shū ma？"
+        },
+        {
+          "chinese": "这不是我的书。",
+          "english": "This is not my book.",
+          "pinyin": "zhè bú shì wǒ de shū。"
+        },
+        {
+          "chinese": "这是云云的书。",
+          "english": "This is Yunyun’s book.",
+          "pinyin": "zhè shì yún yún de shū。"
+        },
+        {
+          "chinese": "我在家里讲中文。",
+          "english": "I speak Chinese at home.",
+          "pinyin": "wǒ zài jiā lǐ jiǎng zhōng wén。"
+        }
+      ],
+      "build": [
+        "这",
+        "不是",
+        "我的",
+        "书",
+        "。"
+      ]
+    },
+    {
+      "number": 3,
+      "unit": 1,
+      "title": "放学了",
+      "englishTitle": "Class Is Over",
+      "page": 15,
+      "readingTitle": "云云画画儿",
+      "character": "朋",
+      "text": "今天星期五，放学了，爸爸在车上告诉我：“下午有一个小朋友来我们家。”我问：“他是谁？”爸爸说：“是云云。”云云是我的好朋友，我听了，真开心。",
+      "phrases": [
+        {
+          "chinese": "放学了",
+          "english": "school is over",
+          "pinyin": "fàng xué le"
+        },
+        {
+          "chinese": "今天星期五",
+          "english": "today is Friday",
+          "pinyin": "jīn tiān xīng qī wǔ"
+        },
+        {
+          "chinese": "他是谁？",
+          "english": "Who is he?",
+          "pinyin": "tā shì shuí？"
+        },
+        {
+          "chinese": "我的好朋友",
+          "english": "my good friend",
+          "pinyin": "wǒ de hǎo péng yǒu"
+        }
+      ],
+      "build": [
+        "今天",
+        "星期五",
+        "，",
+        "放学了",
+        "。"
+      ]
+    },
+    {
+      "number": 4,
+      "unit": 2,
+      "title": "讲礼貌",
+      "englishTitle": "Good Manners",
+      "page": 24,
+      "readingTitle": "拍手歌 · 找朋友",
+      "character": "礼",
+      "text": "小朋友，讲礼貌，礼貌用语记心里。“你好！”“请坐。”“谢谢！”“对不起。”“没关系。”“再见！”做个有礼貌的好孩子。",
+      "phrases": [
+        {
+          "chinese": "你好！",
+          "english": "Hello!",
+          "pinyin": "nǐ hǎo！"
+        },
+        {
+          "chinese": "请坐。",
+          "english": "Please sit down.",
+          "pinyin": "qǐng zuò。"
+        },
+        {
+          "chinese": "谢谢！",
+          "english": "Thank you!",
+          "pinyin": "xiè xie！"
+        },
+        {
+          "chinese": "对不起。",
+          "english": "I’m sorry.",
+          "pinyin": "duì bù qǐ。"
+        },
+        {
+          "chinese": "没关系。",
+          "english": "That’s okay.",
+          "pinyin": "méi guān xi。"
+        },
+        {
+          "chinese": "再见！",
+          "english": "Goodbye!",
+          "pinyin": "zài jiàn！"
+        }
+      ],
+      "build": [
+        "请",
+        "坐",
+        "。"
+      ]
+    },
+    {
+      "number": 5,
+      "unit": 2,
+      "title": "买东西",
+      "englishTitle": "Go Shopping",
+      "page": 32,
+      "readingTitle": "加横歌",
+      "character": "买",
+      "text": "今年我六岁了，昨天是我的生日，我们一家去买东西。妈妈给我买了蛋糕、面包、牛奶和水果。爸爸给我买了笔、本子和我喜欢的玩具。哥哥和姐姐给我买了一张生日卡。我们一起唱生日歌，这一天，我真高兴。",
+      "phrases": [
+        {
+          "chinese": "我的生日",
+          "english": "my birthday",
+          "pinyin": "wǒ de shēng rì"
+        },
+        {
+          "chinese": "买东西",
+          "english": "go shopping",
+          "pinyin": "mǎi dōng xi"
+        },
+        {
+          "chinese": "生日歌",
+          "english": "birthday song",
+          "pinyin": "shēng rì gē"
+        },
+        {
+          "chinese": "我真高兴。",
+          "english": "I’m really happy.",
+          "pinyin": "wǒ zhēn gāo xìng。"
+        }
+      ],
+      "build": [
+        "我",
+        "真",
+        "高兴",
+        "。"
+      ]
+    },
+    {
+      "number": 6,
+      "unit": 2,
+      "title": "我会做的事",
+      "englishTitle": "Things I Can Do",
+      "page": 39,
+      "readingTitle": "绕口令",
+      "character": "会",
+      "text": "我是一个小学生，可是你别说我小。我会收拾小房间，还会洗衣和洗澡。小猫饿了我会喂，我会做的事真不少。",
+      "phrases": [
+        {
+          "chinese": "我是一个小学生",
+          "english": "I am a pupil",
+          "pinyin": "wǒ shì yí gè xiǎo xué shēng"
+        },
+        {
+          "chinese": "我会收拾小房间",
+          "english": "I can tidy my little room",
+          "pinyin": "wǒ huì shōu shí xiǎo fáng jiān"
+        },
+        {
+          "chinese": "洗衣和洗澡",
+          "english": "wash clothes and bathe",
+          "pinyin": "xǐ yī hé xǐ zǎo"
+        },
+        {
+          "chinese": "我会做的事真不少。",
+          "english": "I can do quite a lot.",
+          "pinyin": "wǒ huì zuò de shì zhēn bù shǎo。"
+        }
+      ],
+      "build": [
+        "我",
+        "会",
+        "收拾",
+        "小房间",
+        "。"
+      ]
+    },
+    {
+      "number": 7,
+      "unit": 3,
+      "title": "人有两件宝",
+      "englishTitle": "Two Precious Things",
+      "page": 48,
+      "readingTitle": "猜一猜",
+      "character": "手",
+      "text": "人有两件宝，双手和大脑。双手会做工，大脑会思考。用手不用脑，工作做不好。用脑不用手，万事做不到。用手又用脑，事事做得好。",
+      "phrases": [
+        {
+          "chinese": "双手和大脑",
+          "english": "hands and brain",
+          "pinyin": "shuāng shǒu hé dà nǎo"
+        },
+        {
+          "chinese": "双手会做工",
+          "english": "hands can work",
+          "pinyin": "shuāng shǒu huì zuò gōng"
+        },
+        {
+          "chinese": "大脑会思考",
+          "english": "the brain can think",
+          "pinyin": "dà nǎo huì sī kǎo"
+        },
+        {
+          "chinese": "用手又用脑",
+          "english": "use both hands and brain",
+          "pinyin": "yòng shǒu yòu yòng nǎo"
+        }
+      ],
+      "build": [
+        "双手",
+        "和",
+        "大脑",
+        "。"
+      ]
+    },
+    {
+      "number": 8,
+      "unit": 3,
+      "title": "月亮会不会跟人走",
+      "englishTitle": "Does the Moon Follow Us?",
+      "page": 54,
+      "readingTitle": "弯弯的月亮",
+      "character": "月",
+      "text": "一天，方方问爸爸：“我走，月亮也走。月亮为什么跟人走？”爸爸说：“月亮很高很远，人在哪儿都能看得见，你才会觉得月亮跟人走。”方方高兴地说：“我有点儿明白了。”",
+      "phrases": [
+        {
+          "chinese": "月亮也走",
+          "english": "the moon moves too",
+          "pinyin": "yuè liàng yě zǒu"
+        },
+        {
+          "chinese": "月亮为什么跟人走？",
+          "english": "Why does the moon follow people?",
+          "pinyin": "yuè liàng wèi shén me gēn rén zǒu？"
+        },
+        {
+          "chinese": "月亮很高很远",
+          "english": "the moon is high and far away",
+          "pinyin": "yuè liàng hěn gāo hěn yuǎn"
+        },
+        {
+          "chinese": "我有点儿明白了。",
+          "english": "I understand a little now.",
+          "pinyin": "wǒ yǒu diǎnr míng bái le。"
+        }
+      ],
+      "build": [
+        "月亮",
+        "为什么",
+        "跟",
+        "人",
+        "走",
+        "？"
+      ]
+    },
+    {
+      "number": 9,
+      "unit": 3,
+      "title": "为什么",
+      "englishTitle": "Why?",
+      "page": 61,
+      "readingTitle": "小好奇",
+      "character": "为",
+      "text": "夏天时，冬天在哪里？冬天时，夏天在哪里？天亮时，黑夜在哪里？天黑时，光明在哪里？为什么河水会流动？为什么湖水又不流？为什么鸟儿不在水中飞？为什么鱼儿不在天上游？",
+      "phrases": [
+        {
+          "chinese": "冬天在哪里？",
+          "english": "Where is winter?",
+          "pinyin": "dōng tiān zài nǎ lǐ？"
+        },
+        {
+          "chinese": "黑夜在哪里？",
+          "english": "Where is the night?",
+          "pinyin": "hēi yè zài nǎ lǐ？"
+        },
+        {
+          "chinese": "为什么河水会流动？",
+          "english": "Why does river water flow?",
+          "pinyin": "wèi shén me hé shuǐ huì liú dòng？"
+        },
+        {
+          "chinese": "为什么鱼儿不在天上游？",
+          "english": "Why don’t fish swim in the sky?",
+          "pinyin": "wèi shén me yú er bú zài tiān shàng yóu？"
+        }
+      ],
+      "build": [
+        "冬天",
+        "在",
+        "哪里",
+        "？"
+      ]
+    },
+    {
+      "number": 10,
+      "unit": 4,
+      "title": "春雨",
+      "englishTitle": "Spring Rain",
+      "page": 72,
+      "readingTitle": "种子",
+      "character": "雨",
+      "text": "滴答，滴答，下雨了，下雨了。种子说：“下吧，下吧，我要发芽。”禾苗说：“下吧，下吧，我要长大。”果树说：“下吧，下吧，我要开花。”小朋友说：“下吧，下吧，我要种瓜。”滴答，滴答，下雨了，下雨了。",
+      "phrases": [
+        {
+          "chinese": "下雨了",
+          "english": "it is raining",
+          "pinyin": "xià yǔ le"
+        },
+        {
+          "chinese": "我要发芽",
+          "english": "I want to sprout",
+          "pinyin": "wǒ yào fā yá"
+        },
+        {
+          "chinese": "我要开花",
+          "english": "I want to bloom",
+          "pinyin": "wǒ yào kāi huā"
+        },
+        {
+          "chinese": "我要种瓜",
+          "english": "I want to plant melons",
+          "pinyin": "wǒ yào zhòng guā"
+        }
+      ],
+      "build": [
+        "我",
+        "要",
+        "发芽",
+        "。"
+      ]
+    },
+    {
+      "number": 11,
+      "unit": 4,
+      "title": "江河",
+      "englishTitle": "Rivers",
+      "page": 79,
+      "readingTitle": "泉水和大海",
+      "character": "江",
+      "text": "古老的中国有一条江，它的名字叫长江。古老的中国有一条河，它的名字叫黄河。长江是中国最长的江，黄河是中国的母亲河。它们从西流到东，哺育着中华大地。我们爱长江，我们爱黄河。",
+      "phrases": [
+        {
+          "chinese": "它的名字叫长江。",
+          "english": "Its name is the Yangtze River.",
+          "pinyin": "tā de míng zì jiào cháng jiāng。"
+        },
+        {
+          "chinese": "它的名字叫黄河。",
+          "english": "Its name is the Yellow River.",
+          "pinyin": "tā de míng zì jiào huáng hé。"
+        },
+        {
+          "chinese": "从西流到东",
+          "english": "flow from west to east",
+          "pinyin": "cóng xī liú dào dōng"
+        },
+        {
+          "chinese": "我们爱长江",
+          "english": "we love the Yangtze River",
+          "pinyin": "wǒ men ài cháng jiāng"
+        }
+      ],
+      "build": [
+        "我们",
+        "爱",
+        "长江",
+        "。"
+      ]
+    },
+    {
+      "number": 12,
+      "unit": 4,
+      "title": "放假了",
+      "englishTitle": "School Holiday",
+      "page": 86,
+      "readingTitle": "我们绝不开门",
+      "character": "假",
+      "text": "老师：要放假了。放假以后，你们想去哪儿？明明：我想跟爸爸、妈妈去中国旅游。方方：我想去动物园。亮亮：我想去海洋公园游泳。云云：我哪儿都不去，想帮妈妈做点儿家务活儿。老师：祝你们假期快乐。",
+      "phrases": [
+        {
+          "chinese": "要放假了。",
+          "english": "School holidays are coming.",
+          "pinyin": "yào fàng jià le。"
+        },
+        {
+          "chinese": "你们想去哪儿？",
+          "english": "Where do you want to go?",
+          "pinyin": "nǐ men xiǎng qù nǎr？"
+        },
+        {
+          "chinese": "我想去动物园。",
+          "english": "I want to go to the zoo.",
+          "pinyin": "wǒ xiǎng qù dòng wù yuán。"
+        },
+        {
+          "chinese": "祝你们假期快乐。",
+          "english": "Have a happy holiday!",
+          "pinyin": "zhù nǐ men jià qī kuài lè。"
+        }
+      ],
+      "build": [
+        "我",
+        "想",
+        "去",
+        "动物园",
+        "。"
+      ]
+    }
+  ]
+}
