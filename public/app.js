@@ -41,9 +41,9 @@ function readVoiceStyle() {
 const newPractice = () => ({ status: 'idle', transcript: '', message: '', progress: '' });
 const state = {
   view: 'home', lesson: 1, step: 'learn', phraseIndex: 0, quizIndex: 0,
-  quizSelected: null, exercises: null, right: 0, total: 0,
+  quizSelected: null, quizWrongOptions: new Set(), exercises: null, right: 0, total: 0,
   builderIndex: 0, builderSelected: [], builderChecked: false, builderHint: '', builderAttempted: false,
-  listeningIndex: 0, listeningSelected: null,
+  listeningIndex: 0, listeningSelected: null, listeningWrongOptions: new Set(),
   practice: newPractice(), traceDrawn: false,
   wordDetail: null,
   homeworkLesson: 1, homeworkMode: 'chinese', homework: null,
@@ -320,9 +320,9 @@ function startLesson(number) {
   if (state.wordDetail) closeWordDialog();
   state.lesson = number;
   state.view = 'lesson'; state.step = 'learn'; state.phraseIndex = 0;
-  state.quizIndex = 0; state.quizSelected = null; state.right = 0; state.total = 0;
+  state.quizIndex = 0; state.quizSelected = null; state.quizWrongOptions = new Set(); state.right = 0; state.total = 0;
   state.builderIndex = 0; state.builderSelected = []; state.builderChecked = false; state.builderHint = ''; state.builderAttempted = false;
-  state.listeningIndex = 0; state.listeningSelected = null;
+  state.listeningIndex = 0; state.listeningSelected = null; state.listeningWrongOptions = new Set();
   state.practice = newPractice(); state.traceDrawn = false;
   state.exercises = buildLessonExercises(lesson(), buildEnglish[number]);
   render(); window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -402,11 +402,12 @@ function lessonCard() {
     return `<span class="exercise-tag">Translation choice · ${state.quizIndex + 1}/${state.exercises.translations.length}</span><h2>${chinesePrompt ? 'Choose the English meaning' : 'Choose the Chinese sentence'}</h2>
       ${chinesePrompt ? `${renderSpeakingPhrase(item, 'exercise-prompt')}<button class="btn btn-light btn-small" data-action="speak-quiz">🔊 Hear it</button>` : `<p class="translation-prompt">${escapeHtml(item.english)}</p>`}
       <div class="options">${question.options.map(optionIndex => {
-        const selected = state.quizSelected !== null;
-        const className = selected && optionIndex === question.phraseIndex ? 'correct' : selected && optionIndex === state.quizSelected ? 'wrong' : '';
-        return `<button class="option ${chinesePrompt ? '' : 'hanzi option-hanzi'} ${className}" data-action="choose" data-option="${optionIndex}" ${selected ? 'disabled' : ''}>${escapeHtml(chinesePrompt ? current.phrases[optionIndex].english : current.phrases[optionIndex].chinese)}</button>`;
+        const correct = state.quizSelected === question.phraseIndex;
+        const wrong = state.quizWrongOptions.has(optionIndex);
+        const className = correct && optionIndex === question.phraseIndex ? 'correct' : wrong ? 'wrong' : '';
+        return `<button class="option ${chinesePrompt ? '' : 'hanzi option-hanzi'} ${className}" data-action="choose" data-option="${optionIndex}" ${correct || wrong ? 'disabled' : ''}>${escapeHtml(chinesePrompt ? current.phrases[optionIndex].english : current.phrases[optionIndex].chinese)}</button>`;
       }).join('')}</div>
-      ${state.quizSelected !== null ? `<div class="feedback ${state.quizSelected === question.phraseIndex ? 'good' : 'try'}" role="status">${state.quizSelected === question.phraseIndex ? 'Nice choice! ✨' : 'Good try. Here is the answer.'}</div><div class="translation-answer">${renderSpeakingPhrase(item, 'answer-phrase')}<strong>${escapeHtml(item.english)}</strong></div><div class="card-actions"><button class="btn btn-primary" data-action="next-quiz">Continue →</button></div>` : ''}`;
+      ${state.quizSelected !== null ? `<div class="feedback good" role="status">Nice choice! ✨</div><div class="translation-answer">${renderSpeakingPhrase(item, 'answer-phrase')}<strong>${escapeHtml(item.english)}</strong></div><div class="card-actions"><button class="btn btn-primary" data-action="next-quiz">Continue →</button></div>` : state.quizWrongOptions.size ? '<div class="feedback try" role="status">Not quite. Try another answer to keep going.</div>' : ''}`;
   }
   if (state.step === 'build') {
     const question = state.exercises.builders[state.builderIndex];
@@ -417,7 +418,7 @@ function lessonCard() {
       <p class="${chineseAnswer ? 'meaning' : 'big-chinese hanzi'}">${escapeHtml(question.prompt)}</p>${chineseAnswer ? '' : '<button class="btn btn-light btn-small" data-action="speak-build">🔊 Hear the Chinese</button>'}
       <div class="builder-answer" aria-label="Your sentence">${state.builderSelected.length ? state.builderSelected.map(index => `<button class="chunk ${chineseAnswer ? 'hanzi' : ''}" data-action="remove-chunk" data-index="${index}" aria-label="Remove ${escapeHtml(question.answer[index])}" ${state.builderChecked ? 'disabled' : ''}>${escapeHtml(question.answer[index])}</button>`).join('') : '<span class="answer-placeholder">Tap the pieces below to build the sentence</span>'}</div>
       <div class="builder-bank">${bank.map(index => `<button class="chunk ${chineseAnswer ? 'hanzi' : ''}" data-action="add-chunk" data-index="${index}">${escapeHtml(question.answer[index])}</button>`).join('')}</div>
-      ${state.builderHint ? `<div class="feedback ${state.builderChecked ? 'good' : 'try'}">${escapeHtml(state.builderHint)}</div>` : ''}
+      ${state.builderHint ? `<div class="feedback ${state.builderChecked ? 'good' : 'try'}" role="status">${escapeHtml(state.builderHint)}</div>` : ''}
       <div class="card-actions"><button class="btn btn-light" data-action="clear-build" ${state.builderChecked ? 'disabled' : ''}>Start over</button><button class="btn btn-primary" data-action="check-build" ${state.builderSelected.length !== question.answer.length || state.builderChecked ? 'disabled' : ''}>Check answer</button>${state.builderChecked ? '<button class="btn btn-mint" data-action="next-build">Continue →</button>' : ''}</div>
       <p class="hint">Tap a piece in your sentence to move it back.</p>`;
   }
@@ -427,8 +428,8 @@ function lessonCard() {
     const correct = state.listeningSelected === question.answer.text;
     return `<span class="exercise-tag">Listening choice · ${state.listeningIndex + 1}/${state.exercises.listening.length}</span><h2>Which Chinese word do you hear?</h2>
       <div class="speaker-symbol" aria-hidden="true">🔊</div><div class="card-actions"><button class="btn btn-primary" data-action="play-listening">🔊 Play the word</button><button class="btn btn-light" data-action="slow-listening">🐢 Play slowly</button></div>
-      <div class="options listening-options">${question.options.map(option => `<button class="option hanzi option-hanzi ${answered && option.text === question.answer.text ? 'correct' : answered && option.text === state.listeningSelected ? 'wrong' : ''}" data-action="choose-listening" data-word="${escapeHtml(option.text)}" ${answered ? 'disabled' : ''}>${escapeHtml(option.text)}</button>`).join('')}</div>
-      ${answered ? `<div class="feedback ${correct ? 'good' : 'try'}" role="status">${correct ? 'You heard it! ✨' : state.listeningSelected === 'skipped' ? 'Listen once more when you are ready.' : 'Good try. Listen to the answer again.'}</div><div class="listening-answer"><span class="pinyin">${escapeHtml(question.answer.pinyin)}</span><strong class="hanzi">${escapeHtml(question.answer.text)}</strong><span>${escapeHtml(question.answer.meaning)}</span></div><div class="card-actions"><button class="btn btn-mint" data-action="next-listening">Continue →</button></div>` : '<div class="card-actions"><button class="btn btn-light btn-small" data-action="skip-listening">Skip this word</button></div>'}
+      <div class="options listening-options">${question.options.map(option => `<button class="option hanzi option-hanzi ${correct && option.text === question.answer.text ? 'correct' : state.listeningWrongOptions.has(option.text) ? 'wrong' : ''}" data-action="choose-listening" data-word="${escapeHtml(option.text)}" ${answered || state.listeningWrongOptions.has(option.text) ? 'disabled' : ''}>${escapeHtml(option.text)}</button>`).join('')}</div>
+      ${answered ? `<div class="feedback ${correct ? 'good' : 'try'}" role="status">${correct ? 'You heard it! ✨' : 'You can practise this word again later.'}</div><div class="listening-answer"><span class="pinyin">${escapeHtml(question.answer.pinyin)}</span><strong class="hanzi">${escapeHtml(question.answer.text)}</strong><span>${escapeHtml(question.answer.meaning)}</span></div><div class="card-actions"><button class="btn btn-mint" data-action="next-listening">Continue →</button></div>` : `${state.listeningWrongOptions.size ? '<div class="feedback try" role="status">Not quite. Listen again and choose another word.</div>' : ''}<div class="card-actions"><button class="btn btn-light btn-small" data-action="skip-listening">Skip this word</button></div>`}
       <p class="hint">Audio uses the Chinese voice selected in Settings.</p>`;
   }
   if (state.step === 'speak') {
@@ -444,7 +445,7 @@ function lessonCard() {
   const earned = Math.max(1, Math.min(3, Math.ceil((state.right / Math.max(1, state.total)) * 3)));
   return `<span class="exercise-tag">Lesson complete</span><div class="result-stars" aria-label="${earned} stars">${'★'.repeat(earned)}${'☆'.repeat(3 - earned)}</div>
     <h2>Lovely work on <span class="hanzi">${escapeHtml(current.title)}</span>!</h2><p>You spoke, translated, built sentences, listened for Chinese words, and drew a character.</p>
-    <div class="result-stats"><span class="stat-pill">${state.right}/${state.total} practice checks</span><span class="stat-pill">${current.phrases.length} phrases explored</span><span class="stat-pill">1 character drawn</span></div>
+    <div class="result-stats"><span class="stat-pill">${state.right}/${state.total} first-try answers</span><span class="stat-pill">${current.phrases.length} phrases explored</span><span class="stat-pill">1 character drawn</span></div>
     <div class="card-actions"><button class="btn btn-light" data-action="start" data-lesson="${current.number}">Play again</button>${current.number < 12 ? `<button class="btn btn-primary" data-action="start" data-lesson="${current.number + 1}">Next lesson →</button>` : `<button class="btn btn-primary" data-action="home">See my path →</button>`}</div>`;
 }
 
@@ -475,7 +476,7 @@ function startReview(mode) {
     lesson: number,
     mode: state.homeworkMode,
     lastRecognizer: state.speechRecognizer,
-    queue: book.lessons.find(item => item.number === number).phrases.map((_, index) => ({ index, attempts: 0, deferred: false })),
+    queue: book.lessons.find(item => item.number === number).phrases.map((_, index) => ({ index, attempts: 0 })),
     matched: 0,
     closeMatches: 0,
     results: {},
@@ -511,8 +512,7 @@ function homeworkTranscript(transcript, alternatives = [transcript]) {
     chime();
   } else {
     card.attempts++;
-    homework.feedback = { kind: card.attempts === 1 ? 'retry' : card.deferred ? 'practice' : 'later', transcript: result.transcript };
-    if (homework.feedback.kind === 'practice') homework.results[card.index] = 'practice';
+    homework.feedback = { kind: 'retry', transcript: result.transcript };
   }
   render();
 }
@@ -521,11 +521,7 @@ function advanceHomework() {
   const homework = state.homework;
   if (!homework?.feedback || homework.feedback.kind === 'retry') return;
   const card = homework.queue.shift();
-  if (homework.feedback.kind === 'later') {
-    card.deferred = true;
-    card.attempts = 0;
-    homework.queue.push(card);
-  } else if (homework.feedback.kind === 'skip') {
+  if (homework.feedback.kind === 'skip') {
     homework.results[card.index] = 'practice';
   }
   homework.feedback = null;
@@ -577,14 +573,12 @@ function renderReview() {
   const answerVisible = !!feedback;
   const feedbackText = feedback?.kind === 'exact' ? `${feedbackRecognizerName} heard the expected Chinese words. ★`
     : feedback?.kind === 'close' ? `That was close enough for this practice! ${feedbackRecognizerName} may have misheard a word. ★`
-    : feedback?.kind === 'retry' ? `${feedbackRecognizerName} heard different words. It may have misheard you—listen and try once more.`
-    : feedback?.kind === 'later' ? 'Let’s revisit this phrase at the end.'
-    : feedback?.kind === 'practice' ? 'Good practice. Keep this phrase for another day.'
+    : feedback?.kind === 'retry' ? `${feedbackRecognizerName} heard different words. It may have misheard you—listen and try again.`
     : feedback?.kind === 'skip' ? 'Practice completed without a microphone. No match star was awarded.' : '';
   return `<div class="section-intro homework-intro"><button class="review-back" data-action="review-setup">← Choose another set</button><div class="eyebrow">Review set ${homework.mode === 'english' ? '2' : '1'} · Lesson ${homework.lesson}</div><h1 class="page-title">${escapeHtml(lessonData.englishTitle)}</h1><p class="lead">${homework.mode === 'english' ? 'Read the English meaning and say the Chinese sentence.' : 'Read the Chinese sentence out loud.'}</p></div>
     <div class="homework-top"><span>${completed} of ${total} cards finished</span><span class="homework-count">★ ${homework.matched} accepted · ${homework.queue.length} remaining</span></div>
     <div class="homework-meter" role="progressbar" aria-valuenow="${completed}" aria-valuemin="0" aria-valuemax="${total}" aria-label="Review progress"><span style="width:${100 * completed / total}%"></span></div>
-    <section class="homework-card panel" aria-live="polite"><span class="exercise-tag">Card ${card.index + 1} of ${total}${card.deferred ? ' · one more go' : ''}</span>
+    <section class="homework-card panel" aria-live="polite"><span class="exercise-tag">Card ${card.index + 1} of ${total}${card.attempts ? ` · try ${card.attempts + 1}` : ''}</span>
       <h2>${homework.mode === 'english' ? 'Say this in Chinese' : 'Say this sentence'}</h2>
       ${homework.mode === 'english' ? `<div class="homework-prompt">${escapeHtml(phrase.english)}</div>` : renderSpeakingPhrase(phrase)}
       ${!answerVisible ? `<p class="homework-hint">${homework.mode === 'english' ? 'The Chinese words and pinyin appear after you try.' : 'Tap a word for its meaning, pronunciation, and writing strokes.'}</p>` : ''}
@@ -596,7 +590,7 @@ function renderReview() {
         ${!feedback || feedback.kind === 'retry' ? `<button class="btn btn-primary" data-action="${['listening', 'recording'].includes(homework.capturePhase) ? 'review-done' : 'review-mic'}" ${homework.listening && !['listening', 'recording'].includes(homework.capturePhase) ? 'disabled' : ''}>${homework.capturePhase === 'loading' ? 'Loading speech model…' : homework.capturePhase === 'processing' ? 'Checking speech…' : ['listening', 'recording'].includes(homework.capturePhase) ? '✓ Done' : feedback ? '🎙 Try again' : '🎙 Speak it'}</button>` : ''}
         ${answerVisible ? `<button class="btn btn-light" data-action="review-hear">🔊 Hear the answer</button>` : ''}
         ${!feedback || feedback.kind === 'retry' ? '<button class="btn btn-light" data-action="review-skip">Skip speaking</button>' : ''}
-        ${feedback && feedback.kind !== 'retry' ? `<button class="btn btn-mint" data-action="review-next">${homework.queue.length === 1 && feedback.kind !== 'later' ? 'See my results' : 'Next card'} →</button>` : ''}
+        ${feedback && feedback.kind !== 'retry' ? `<button class="btn btn-mint" data-action="review-next">${homework.queue.length === 1 ? 'See my results' : 'Next card'} →</button>` : ''}
       </div>
       <p class="hint" role="status">${homework.capturePhase === 'loading' ? escapeHtml(homework.modelProgress || 'Loading model…') : ['listening', 'recording'].includes(homework.capturePhase) ? 'Speak the sentence, then tap Done. Recording stops automatically after 10 seconds.' : 'A close word match counts. Speech recognition does not judge pronunciation quality.'}</p>
     </section>`;
@@ -781,14 +775,22 @@ document.addEventListener('click', event => {
   }
   if (action === 'speak-phrase') return speak(lesson().phrases[state.step === 'learn' ? state.phraseIndex : 0].chinese);
   if (action === 'speak-quiz') return speak(lesson().phrases[state.exercises.translations[state.quizIndex].phraseIndex].chinese);
-  if (action === 'choose' && state.quizSelected === null) {
-    state.quizSelected = Number(target.dataset.option); state.total++;
-    if (state.quizSelected === state.exercises.translations[state.quizIndex].phraseIndex) { state.right++; chime(); }
+  if (action === 'choose' && state.step === 'quiz' && state.quizSelected === null) {
+    const option = Number(target.dataset.option);
+    const question = state.exercises.translations[state.quizIndex];
+    if (!question.options.includes(option) || state.quizWrongOptions.has(option)) return;
+    const firstTry = state.quizWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (option === question.phraseIndex) {
+      state.quizSelected = option;
+      if (firstTry) state.right++;
+      chime();
+    } else state.quizWrongOptions.add(option);
     return render();
   }
   if (action === 'next-quiz') {
     if (state.quizSelected === null) return;
-    state.quizSelected = null;
+    state.quizSelected = null; state.quizWrongOptions = new Set();
     if (++state.quizIndex >= state.exercises.translations.length) state.step = 'build';
     return render();
   }
@@ -823,16 +825,26 @@ document.addEventListener('click', event => {
   if (action === 'slow-listening') return speak(state.exercises.listening[state.listeningIndex].answer.text, 'zh-CN', .62);
   if (action === 'choose-listening' && state.step === 'listening' && state.listeningSelected === null) {
     const question = state.exercises.listening[state.listeningIndex];
-    state.listeningSelected = target.dataset.word;
-    state.total++;
-    if (state.listeningSelected === question.answer.text) { state.right++; chime(); }
-    return render();
+    const word = target.dataset.word;
+    if (!question.options.some(option => option.text === word) || state.listeningWrongOptions.has(word)) return;
+    const firstTry = state.listeningWrongOptions.size === 0;
+    if (firstTry) state.total++;
+    if (word === question.answer.text) {
+      state.listeningSelected = word;
+      if (firstTry) state.right++;
+      chime();
+      return render();
+    }
+    state.listeningWrongOptions.add(word);
+    render(); speak(question.answer.text); return;
   }
   if (action === 'skip-listening' && state.step === 'listening' && state.listeningSelected === null) {
-    state.listeningSelected = 'skipped'; state.total++; return render();
+    state.listeningSelected = 'skipped';
+    if (!state.listeningWrongOptions.size) state.total++;
+    return render();
   }
   if (action === 'next-listening' && state.step === 'listening' && state.listeningSelected !== null) {
-    state.listeningSelected = null;
+    state.listeningSelected = null; state.listeningWrongOptions = new Set();
     if (++state.listeningIndex >= state.exercises.listening.length) {
       state.step = 'speak'; state.practice = newPractice(); return render();
     }

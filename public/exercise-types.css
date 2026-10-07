@@ -13,6 +13,8 @@
   line-height: 1.35;
 }
 
+.option.wrong:disabled { opacity: 1; }
+
 .translation-answer {
   display: grid;
   justify-items: center;
