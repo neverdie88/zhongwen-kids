@@ -1,12 +1,12 @@
 import { evaluateSpeechAttempt } from './speech-check.mjs';
 import { prepareBrowserRecognizer, releaseBrowserRecognizer, transcribeInBrowser } from './browser-asr.mjs';
 import { recordedAudioToSamples } from './audio-prep.mjs';
-import { tokenizePhrase, wordMeanings, characterMeanings } from './word-study.mjs';
+import { tokenizePhrase, wordMeanings, characterMeanings } from './word-study.mjs?v=20261008-workbook';
 import { chooseChineseVoice, voicePitch } from './voice-style.mjs';
 import { renderTranscript, transcriptPinyin } from './transcript-pinyin.mjs';
 import { buildLessonExercises } from './exercise-data.mjs';
 import { buildWorkbookHomework } from './workbook-homework.mjs';
-import { readProgress, saveProgress as persistProgress } from './progress-store.mjs';
+import { readProgress, saveProgress as persistProgress } from './progress-store.mjs?v=20261008-workbook';
 
 const app = document.getElementById('app');
 const toastEl = document.getElementById('toast');
