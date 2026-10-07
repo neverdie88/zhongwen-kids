@@ -28,7 +28,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:speech
-      - run: node --test test/*.test.mjs
+      - run: npm run check
       - name: Restore browser speech model files
         run: bash scripts/restore-site-models.sh
       - name: Assemble static site

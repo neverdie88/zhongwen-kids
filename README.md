@@ -46,10 +46,11 @@ To reproduce the static site locally on Linux, run `bash scripts/restore-site-mo
 
 ```sh
 npm run check
+npm run check:source
 python3 scripts/download_workbooks.py
 ```
 
-`npm run check` validates app syntax, checks every speaking word's pinyin, meaning, and local stroke file, and checks the Book 2 learning phrases and sentence builders against the supplied textbook's page text. The download script rechecks cached PDFs and fetches any missing file.
+`npm run check` validates app syntax and tests the exercises, speech matching, pinyin, voices, and local stroke files. `npm run check:source` additionally checks the Book 2 phrases and sentence builders against the supplied textbook PDF; it requires the local PDF and Poppler. The download script rechecks cached workbook PDFs and fetches any missing file.
 
 The browser model smoke test is at [http://127.0.0.1:4178/test/browser-asr-smoke.html](http://127.0.0.1:4178/test/browser-asr-smoke.html). It transcribes a short synthesized Mandarin clip without asking for microphone access. Real child speech still needs a separate check on the child's device.
 
