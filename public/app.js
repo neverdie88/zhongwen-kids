@@ -262,9 +262,13 @@ function listen(lang, onWords, onError = message => toast(message), contextPhras
   activeRecognition = recognition;
   recognition.lang = lang; recognition.interimResults = false; recognition.maxAlternatives = 5;
   recognition.continuous = false;
-  if (window.SpeechRecognitionPhrase && 'phrases' in recognition && contextPhrases.length) {
-    try { recognition.phrases = contextPhrases.map(phrase => new window.SpeechRecognitionPhrase(phrase, 2)); }
-    catch { /* Context hints are optional in older browsers. */ }
+  const GrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+  if (GrammarList && 'grammars' in recognition && contextPhrases.length) {
+    try {
+      const grammars = new GrammarList();
+      grammars.addFromString('#JSGF V1.0; grammar phrases; public <phrase> = ' + contextPhrases.join(' | ') + ' ;', 1);
+      recognition.grammars = grammars;
+    } catch { /* Context hints are optional in older browsers. */ }
   }
   recognition.onresult = event => {
     if (activeRecognition !== recognition) return;
